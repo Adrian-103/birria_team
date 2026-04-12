@@ -22,10 +22,13 @@ git clone https://github.com/Adrian-103/birria_team
 Yo me encargaré de gestionar las ramas (crearlas principalmente). Por favor **no subir nada directo a main.** Todos nuestros cambios irán directo a **dev**.
 
 Una vez hayas clonado el repo, ejecuta esto para cambiar de rama:
-`
+
+```bash
 git checkout dev
-`
+```
+
 Si en el futuro necesitas cambiar a otra rama que hayamos creado, solo usa `git checkout nombre-de-la-rama`.
+
 ---
 
 ## 2. Nuestro Flujo de Trabajo Diario
@@ -34,25 +37,30 @@ Cada vez que vayas a trabajar en el código, sigue este orden **exacto**:
 
 ### Paso 1: Sincronizar (¡Siempre haz esto antes de empezar!)
 Antes de escribir una sola línea de código, asegúrate de descargar los cambios que hicieron los demás para evitar conflictos.
-`bash
+
+```bash
 git pull origin dev
-`
+```
 
 ### Paso 2: Realizar los cambios
 Haz tus cambios, edita los archivos, y prueba que todo funcione bien en el robot o en la simulación.
 
 ### Paso 3: Revisar qué cambió
 Para ver exactamente qué archivos modificaste, usa este comando (git mostrará los diferentes cambios):
-`bash
+
+```bash
 git status
-`
+```
+
 *Los archivos modificados aparecerán en color rojo o resaltados.*
 
 ### Paso 4: Preparar los cambios
 Añade los archivos que quieres subir. Para añadir **todos** los cambios a la vez (lo más rápido y común):
-`bash
+
+```bash
 git add .
-`
+```
+
 *(Si vuelves a ejecutar `git status`, ahora los archivos estarán en verde, es como si ya hubieran sido registrados).*
 
 ### Paso 5: Empaquetar y etiquetar (El Commit)
@@ -63,9 +71,11 @@ git commit -m "[Descripcion]"
 
 ### Paso 6: Subir a GitHub
 Finalmente, mandamos el paquete a la nube para que todo el equipo lo tenga disponible:
-`bash
+
+```bash
 git push origin dev
-`
+```
+
 ---
 
 ## 3. Troubleshooting
@@ -86,6 +96,7 @@ git push origin dev
 9. **¡CÓPIALO INMEDIATAMENTE!** Te aparecerá un código largo. Guárdalo en un bloc de notas seguro o en tu gestor de contraseñas, porque **GitHub no te lo volverá a mostrar**.
 
 La próxima vez que la terminal te pida contraseña al hacer git push, simplemente pega ese token largo (nota: al pegar en la terminal no se ven los caracteres por seguridad, pero sí se pega) y dale Enter.
+
 ---
 
 ## 4. Cómo fusionar ramas (Hacer un Merge)
@@ -98,28 +109,33 @@ Ejemplo: Queremos pasar todo lo de `dev` hacia `main`.
 
 ### Paso 1: Cambiar a la rama receptora
 Mueve tu terminal a la rama que va a recibir el código final (en este caso, `main`):
-`bash
+
+```bash
 git checkout main
-`
+```
 
 ### Paso 2: Actualizar la rama receptora
 Asegúrate de tener la versión más reciente de `main` en tu computadora antes de combinar nada:
-`bash
+
+```bash
 git pull origin main
-`
+```
 
 ### Paso 3: ¡Hacer la fusión!
 Ahora dile a Git que traiga y absorba todo el historial de la rama `dev` hacia donde estás parado ahorita (`main`):
-`bash
+
+```bash
 git merge dev
-`
+```
+
 *(Si todo sale bien, verás un mensaje diciendo "Fast-forward" o un resumen de los archivos que se añadieron).*
 
 ### Paso 4: Subir la fusión a la nube
 El merge se hizo localmente en tu compu. Ahora hay que avisarle a GitHub que `main` ya tiene el nuevo código:
-`bash
+
+```bash
 git push origin main
-`
+```
 
 ¡Y listo! Ahora `main` y `dev` están sincronizados y al día. Una vez terminado, recuerda regresar a `dev` (`git checkout dev`) para seguir programando.
 
