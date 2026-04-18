@@ -1,0 +1,17 @@
+package.xml
+setup.cfg
+setup.py
+birria_team/__init__.py
+birria_team/figure_node.py
+birria_team/square_node.py
+build/birria_team/birria_team.egg-info/PKG-INFO
+build/birria_team/birria_team.egg-info/SOURCES.txt
+build/birria_team/birria_team.egg-info/dependency_links.txt
+build/birria_team/birria_team.egg-info/entry_points.txt
+build/birria_team/birria_team.egg-info/requires.txt
+build/birria_team/birria_team.egg-info/top_level.txt
+build/birria_team/birria_team.egg-info/zip-safe
+resource/birria_team
+test/test_copyright.py
+test/test_flake8.py
+test/test_pep257.py

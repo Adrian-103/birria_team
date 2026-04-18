@@ -1,0 +1,20 @@
+running egg_info
+writing build/birria_team/birria_team.egg-info/PKG-INFO
+writing dependency_links to build/birria_team/birria_team.egg-info/dependency_links.txt
+writing entry points to build/birria_team/birria_team.egg-info/entry_points.txt
+writing requirements to build/birria_team/birria_team.egg-info/requires.txt
+writing top-level names to build/birria_team/birria_team.egg-info/top_level.txt
+reading manifest file 'build/birria_team/birria_team.egg-info/SOURCES.txt'
+writing manifest file 'build/birria_team/birria_team.egg-info/SOURCES.txt'
+running build
+running build_py
+running install
+running install_lib
+running install_data
+running install_egg_info
+removing '/home/adrian/birria_team/birria_team/install/birria_team/lib/python3.10/site-packages/birria_team-0.0.0-py3.10.egg-info' (and everything under it)
+Copying build/birria_team/birria_team.egg-info to /home/adrian/birria_team/birria_team/install/birria_team/lib/python3.10/site-packages/birria_team-0.0.0-py3.10.egg-info
+running install_scripts
+Installing extra script to /home/adrian/birria_team/birria_team/install/birria_team/lib/birria_team
+Installing simple script to /home/adrian/birria_team/birria_team/install/birria_team/lib/birria_team
+writing list of installed files to '/home/adrian/birria_team/birria_team/build/birria_team/install.log'

@@ -1,0 +1,39 @@
+[0.380s] Invoking command in '/home/adrian/birria_team/birria_team': PYTHONPATH=/home/adrian/birria_team/birria_team/build/birria_team/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/adrian/birria_team/birria_team/install/birria_team/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base build/birria_team build --build-base /home/adrian/birria_team/birria_team/build/birria_team/build install --record /home/adrian/birria_team/birria_team/build/birria_team/install.log --single-version-externally-managed install_data
+[0.511s] running egg_info
+[0.511s] creating build/birria_team/birria_team.egg-info
+[0.511s] writing build/birria_team/birria_team.egg-info/PKG-INFO
+[0.511s] writing dependency_links to build/birria_team/birria_team.egg-info/dependency_links.txt
+[0.511s] writing entry points to build/birria_team/birria_team.egg-info/entry_points.txt
+[0.511s] writing requirements to build/birria_team/birria_team.egg-info/requires.txt
+[0.512s] writing top-level names to build/birria_team/birria_team.egg-info/top_level.txt
+[0.512s] writing manifest file 'build/birria_team/birria_team.egg-info/SOURCES.txt'
+[0.512s] reading manifest file 'build/birria_team/birria_team.egg-info/SOURCES.txt'
+[0.513s] writing manifest file 'build/birria_team/birria_team.egg-info/SOURCES.txt'
+[0.513s] running build
+[0.513s] running build_py
+[0.513s] creating /home/adrian/birria_team/birria_team/build/birria_team/build
+[0.513s] creating /home/adrian/birria_team/birria_team/build/birria_team/build/lib
+[0.513s] creating /home/adrian/birria_team/birria_team/build/birria_team/build/lib/birria_team
+[0.513s] copying birria_team/__init__.py -> /home/adrian/birria_team/birria_team/build/birria_team/build/lib/birria_team
+[0.513s] copying birria_team/figure_node.py -> /home/adrian/birria_team/birria_team/build/birria_team/build/lib/birria_team
+[0.513s] copying birria_team/square_node.py -> /home/adrian/birria_team/birria_team/build/birria_team/build/lib/birria_team
+[0.513s] running install
+[0.513s] running install_lib
+[0.513s] creating /home/adrian/birria_team/birria_team/install/birria_team/lib/python3.10/site-packages/birria_team
+[0.513s] copying /home/adrian/birria_team/birria_team/build/birria_team/build/lib/birria_team/__init__.py -> /home/adrian/birria_team/birria_team/install/birria_team/lib/python3.10/site-packages/birria_team
+[0.514s] copying /home/adrian/birria_team/birria_team/build/birria_team/build/lib/birria_team/figure_node.py -> /home/adrian/birria_team/birria_team/install/birria_team/lib/python3.10/site-packages/birria_team
+[0.514s] copying /home/adrian/birria_team/birria_team/build/birria_team/build/lib/birria_team/square_node.py -> /home/adrian/birria_team/birria_team/install/birria_team/lib/python3.10/site-packages/birria_team
+[0.514s] byte-compiling /home/adrian/birria_team/birria_team/install/birria_team/lib/python3.10/site-packages/birria_team/__init__.py to __init__.cpython-310.pyc
+[0.514s] byte-compiling /home/adrian/birria_team/birria_team/install/birria_team/lib/python3.10/site-packages/birria_team/figure_node.py to figure_node.cpython-310.pyc
+[0.514s] byte-compiling /home/adrian/birria_team/birria_team/install/birria_team/lib/python3.10/site-packages/birria_team/square_node.py to square_node.cpython-310.pyc
+[0.514s] running install_data
+[0.515s] creating /home/adrian/birria_team/birria_team/install/birria_team/share/ament_index
+[0.515s] creating /home/adrian/birria_team/birria_team/install/birria_team/share/ament_index/resource_index
+[0.515s] creating /home/adrian/birria_team/birria_team/install/birria_team/share/ament_index/resource_index/packages
+[0.515s] copying resource/birria_team -> /home/adrian/birria_team/birria_team/install/birria_team/share/ament_index/resource_index/packages
+[0.515s] copying package.xml -> /home/adrian/birria_team/birria_team/install/birria_team/share/birria_team
+[0.515s] running install_egg_info
+[0.516s] Copying build/birria_team/birria_team.egg-info to /home/adrian/birria_team/birria_team/install/birria_team/lib/python3.10/site-packages/birria_team-0.0.0-py3.10.egg-info
+[0.516s] running install_scripts
+[0.529s] writing list of installed files to '/home/adrian/birria_team/birria_team/build/birria_team/install.log'
+[0.544s] Invoked command in '/home/adrian/birria_team/birria_team' returned '0': PYTHONPATH=/home/adrian/birria_team/birria_team/build/birria_team/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/adrian/birria_team/birria_team/install/birria_team/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base build/birria_team build --build-base /home/adrian/birria_team/birria_team/build/birria_team/build install --record /home/adrian/birria_team/birria_team/build/birria_team/install.log --single-version-externally-managed install_data
