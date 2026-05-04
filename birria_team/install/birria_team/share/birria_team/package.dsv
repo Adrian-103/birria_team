@@ -1,6 +1,0 @@
-source;share/birria_team/hook/pythonpath.ps1
-source;share/birria_team/hook/pythonpath.dsv
-source;share/birria_team/hook/pythonpath.sh
-source;share/birria_team/hook/ament_prefix_path.ps1
-source;share/birria_team/hook/ament_prefix_path.dsv
-source;share/birria_team/hook/ament_prefix_path.sh

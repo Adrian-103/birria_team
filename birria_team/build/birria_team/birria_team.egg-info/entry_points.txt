@@ -1,4 +1,0 @@
-[console_scripts]
-extra = birria_team.figure_node:main
-simple = birria_team.square_node:main
-
