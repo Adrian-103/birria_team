@@ -143,4 +143,57 @@ git push origin main
 
 **Con esta guía deberíamos de tener un buen workflow. Cualquier cosa lo checamos en el grupo**
 
+
+# Docker en la Rubik Pi:
+
+**🐳 Flujo de Trabajo: Docker + micro-ROS**
+
+Para compilar y correr nuestro código sin problemas de dependencias, utilizamos un contenedor de Docker personalizado (`ros2_microros`). Este contenedor ya tiene todo preinstalado (ROS2 Humble + micro-ROS Agent).
+
+Sigue este flujo de trabajo cada vez que vayas a probar el robot:
+
+### 1. Verificación de Hardware (¡Muy Importante!)
+Antes de lanzar Docker, debemos asegurarnos de que la placa host reconozca el microcontrolador físicamente.
+Conecta el microcontrolador por USB y ejecuta en la terminal normal:
+
+```bash
+ls /dev/ttyUSB* /dev/ttyACM*
+```
+
+* **Si sale un error (`No such file`):** Hay un problema físico. Revisa el cable USB, cambia de puerto o desconecta/conecta de nuevo hasta que el sistema lo detecte. **No avances al paso 2 si esto falla.**
+* **Si te devuelve una ruta (ej. `/dev/ttyUSB0`):** ¡Todo perfecto! Memoriza ese nombre.
+
+### 2. Iniciar el Contenedor Principal (Terminal 1)
+Una vez confirmada la conexión física, levanta la "burbuja" de ROS ejecutando nuestro alias principal:
+
+```bash
+iniciar_ros
+```
+
+*Nota: Este comando monta la carpeta actual dentro de Docker, mapea los puertos USB y crea el contenedor con el nombre `burbuja_ros`. Mientras esta terminal siga abierta, el contenedor existirá.*
+
+### 3. Lanzar el Agente de micro-ROS
+Dentro del contenedor (tu terminal dirá `root@...`), ejecuta el puente de comunicación usando el puerto que descubriste en el Paso 1:
+
+```bash
+ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyUSB0
+```
+
+Verás que la terminal dice `Session established` cuando la conexión sea exitosa. ¡Déjala corriendo!
+
+### 4. Abrir Terminales Adicionales (Terminal 2, 3, etc.)
+Si necesitas correr más nodos, compilar código o ver tópicos (`ros2 topic list`), **NO uses `iniciar_ros` de nuevo** (eso gastaría el doble de RAM). 
+Abre una nueva sesión SSH en tu computadora y usa nuestra "puerta trasera" para entrar al mismo contenedor que ya está corriendo:
+
+```bash
+entrar_ros
+```
+
+Puedes abrir tantas terminales como necesites usando este comando.
+
+### 5. Salir y Limpiar
+* **Para salir de una terminal secundaria (Terminal 2, 3...):** Simplemente escribe `exit`. Saldrás del contenedor, pero todo seguirá funcionando normalmente en el fondo.
+* **Para apagar todo (Terminal 1):** Presiona `Ctrl + C` para detener el agente de micro-ROS y luego escribe `exit`. Esto destruirá el contenedor limpiamente y liberará la memoria.
+
+
 *El monte Everest no tiene nada en contra de nosotros* 🗿🏔️
