@@ -1,4 +1,6 @@
 from setuptools import find_packages, setup
+import os
+from glob import glob
 
 package_name = 'midterm_challenge'
 
@@ -10,6 +12,7 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        (os.path.join('share', package_name, 'launch'), glob('launch/*.launch.py')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -24,6 +27,10 @@ setup(
     },
     entry_points={
         'console_scripts': [
+            'vision_exe = midterm_challenge.vision:main',
+            'pid_exe = midterm_challenge.point_PID_controller:main',
+            'path_generator_exe = midterm_challenge.path_generator:main',
+            'path_generator_c_exe = midterm_challenge.path_generator_c:main',
         ],
     },
 )
