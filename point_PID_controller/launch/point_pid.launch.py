@@ -14,9 +14,4 @@ def generate_launch_description():
             name='point_PID_controller',
             parameters=[params_file]
         ),
-
-        Node(
-            package='rqt_reconfigure',
-            executable='rqt_reconfigure'
-        )
     ])

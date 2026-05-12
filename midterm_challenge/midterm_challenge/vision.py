@@ -50,9 +50,9 @@ class TrafficLightNode(Node):
         self.declare_parameter('camera_index', 0)
         self.declare_parameter('debug', False)
         self.declare_parameter('vel_red', 0.0)
-        self.declare_parameter('vel_yellow', 0.5)
-        self.declare_parameter('vel_green', 1.5)
-        self.declare_parameter('vel_no_light', 1.5)  # sin semáforo = vía libre
+        self.declare_parameter('vel_yellow', 0.1)
+        self.declare_parameter('vel_green', 0.2)
+        self.declare_parameter('vel_no_light', 0.2)  # sin semáforo = vía libre
 
         self.camera_index = self.get_parameter('camera_index').value
         self.debug = self.get_parameter('debug').value

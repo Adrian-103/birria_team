@@ -13,9 +13,4 @@ def generate_launch_description():
             executable='pid_exe',
             name='point_pid_controller'
         ),
-        Node(
-            package='midterm_challenge',
-            executable='path_generator_c_exe',
-            name='path_generator_c'
-        ),
     ])

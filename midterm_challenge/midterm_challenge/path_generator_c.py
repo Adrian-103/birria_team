@@ -4,7 +4,6 @@ from geometry_msgs.msg import Point
 import math
 
 class PathGenerator(Node):
-    
     def __init__(self):
         super().__init__('path_generator_c')
 
@@ -62,6 +61,9 @@ class PathGenerator(Node):
         self.get_logger().info(f"Nuevo objetivo: ({x}, {y})")
 
     def pose_callback(self, msg):
+        if self.current_goal_index >= len(self.goals):
+            return
+
         self.current_x = msg.x
         self.current_y = msg.y
 
