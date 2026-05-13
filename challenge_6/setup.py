@@ -1,4 +1,6 @@
 from setuptools import find_packages, setup
+import os
+from glob import glob
 
 package_name = 'challenge_6'
 
@@ -24,6 +26,9 @@ setup(
     },
     entry_points={
         'console_scripts': [
+            'camera_node = challenge_6.camera_node:main',
+            'line_node = challenge_6.line_node:main',
+            'hough_node = challenge_6.hough_node:main'
         ],
     },
 )
