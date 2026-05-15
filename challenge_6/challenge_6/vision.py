@@ -1,6 +1,8 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float32
+from sensor_msgs.msg import Image
+from cv_bridge import CvBridge
 
 import cv2 as cv
 import numpy as np
@@ -47,35 +49,39 @@ class TrafficLightNode(Node):
         super().__init__('traffic_light_node')
 
         # Parámetros configurables
-        self.declare_parameter('camera_index', 0)
         self.declare_parameter('debug', False)
         self.declare_parameter('vel_red', 0.0)
         self.declare_parameter('vel_yellow', 0.1)
         self.declare_parameter('vel_green', 0.2)
         self.declare_parameter('vel_no_light', 0.2)  # sin semáforo = vía libre
 
-        self.camera_index = self.get_parameter('camera_index').value
         self.debug = self.get_parameter('debug').value
         self.vel_red = self.get_parameter('vel_red').value
         self.vel_yellow = self.get_parameter('vel_yellow').value
         self.vel_green = self.get_parameter('vel_green').value
         self.vel_no_light = self.get_parameter('vel_no_light').value
 
+        self.bridge = CvBridge()
+
+        # Recibir imagenes desde el nodo de la cámara
+        self.image_sub = self.create_subscription(
+            Image,
+            '/camera/image_raw',
+            self.image_callback,
+            10
+        )
+
+        # Publicar velocidad de acuerdo al color detectado
         self.publisher_ = self.create_publisher(Float32, 'max_vel', 10)
-        self.timer = self.create_timer(0.1, self.timer_callback)  # 10 Hz
 
-        self.cap = cv.VideoCapture(self.camera_index)
-        if not self.cap.isOpened():
-            self.get_logger().error(f'No se pudo abrir la cámara en índice {self.camera_index}')
-            raise RuntimeError('Camera not available')
 
-        self.get_logger().info('TrafficLightNode iniciado')
-
-    def timer_callback(self):
-        ret, image = self.cap.read()
-        if not ret:
-            self.get_logger().warn('No se pudo leer frame de la cámara')
+    def image_callback(self, msg):
+        try:
+            image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+        except Exception as e:
+            self.get_logger().error(f'Error al convertir imagen ROS2 a OpenCV: {e}')
             return
+
 
         hsv_image = cv.cvtColor(image, cv.COLOR_BGR2HSV)
 
@@ -87,16 +93,16 @@ class TrafficLightNode(Node):
 
         if red_detected:
             msg.data = self.vel_red
-            self.get_logger().debug('RED - STOP')
+            self.get_logger().info('RED - STOP')
         elif yellow_detected:
             msg.data = self.vel_yellow
-            self.get_logger().debug('YELLOW - SLOW')
+            self.get_logger().info('YELLOW - SLOW')
         elif green_detected:
             msg.data = self.vel_green
-            self.get_logger().debug('GREEN - GO')
+            self.get_logger().info('GREEN - GO')
         else:
             msg.data = self.vel_no_light
-            self.get_logger().debug('NO LIGHT')
+            self.get_logger().info('NO LIGHT')
 
         self.publisher_.publish(msg)
 
@@ -112,7 +118,6 @@ class TrafficLightNode(Node):
             cv.waitKey(1)
 
     def destroy_node(self):
-        self.cap.release()
         cv.destroyAllWindows()
         super().destroy_node()
 

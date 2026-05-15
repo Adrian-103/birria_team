@@ -28,7 +28,8 @@ setup(
         'console_scripts': [
             'camera_node = challenge_6.camera_node:main',
             'line_node = challenge_6.line_node:main',
-            'hough_node = challenge_6.hough_node:main'
+            'hough_node = challenge_6.hough_node:main',
+            'vision = challenge_6.vision:main',
         ],
     },
 )
