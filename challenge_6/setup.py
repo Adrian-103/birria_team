@@ -28,7 +28,9 @@ setup(
         'console_scripts': [
             'camera_node = challenge_6.camera_node:main',
             'line_node = challenge_6.line_node:main',
-            'hough_node = challenge_6.hough_node:main'
+            'hough_node = challenge_6.hough_node:main',
+            'odometry_node = challenge_6.odometry_node:main',
+            'pid_challenge6.py = challenge_6.pid_challenge6:main'
         ],
     },
 )
