@@ -16,6 +16,15 @@ class hough_node(Node):
         self.image_sub = self.create_subscription(Image, '/camera/image_raw', self.image_callback, 10)
 
         self.bridge = CvBridge()
+
+        self.declare_parameter('debug', False)
+        self.debug = self.get_parameter('debug').value
+
+        self.first_sample = True
+        self.filtered_cx = 0.0
+        self.declare_parameter('alpha', 0.4)
+        self.alpha = self.get_parameter('alpha').value
+        
     
     def image_callback(self, msg):
         frame = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
@@ -71,7 +80,20 @@ class hough_node(Node):
         #El punto medio en X de cada segmento es (x1 + x2) / 2
         #Queremos el promedio de todos esos puntos medios
 
-        error = (width/2) - cx
+        if self.first_sample:
+            self.filtered_cx = cx
+            self.first_sample = False
+        else:
+            self.filtered_cx = self.alpha * cx + (1 - self.alpha) * self.filtered_cx
+
+        if self.debug:
+            for x1, y1, x2, y2 in lines[:, 0]:
+                cv.line(frame, (x1, y1 + frame.shape[0]//2), (x2, y2 + frame.shape[0]//2), (0, 255, 0), 2)
+            cv.circle(frame, (int(self.filtered_cx), frame.shape[0]//2 + (frame.shape[0]//2)//2), 5, (0, 0, 255), -1)
+            cv.imshow('Hough debug', frame)
+            cv.waitKey(1)
+
+        error = (width/2) - self.filtered_cx
         #Error positivo -> La línea está a la izquierda
         #Error negativo -> La línea está a la derecha
 

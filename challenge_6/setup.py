@@ -30,6 +30,8 @@ setup(
             'line_node = challenge_6.line_node:main',
             'hough_node = challenge_6.hough_node:main',
             'vision = challenge_6.vision:main',
+            'odometry_node = challenge_6.odometry_node:main',
+            'pid_challenge6 = challenge_6.pid_challenge6:main'
         ],
     },
 )
