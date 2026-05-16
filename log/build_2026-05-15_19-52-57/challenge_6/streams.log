@@ -1,0 +1,58 @@
+[0.419s] Invoking command in '/home/sofia/ros2_ws/src/ch_6/birria_team/challenge_6': PYTHONPATH=/home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/challenge_6 build --build-base /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build install --record /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/install.log --single-version-externally-managed install_data
+[0.579s] running egg_info
+[0.579s] creating ../build/challenge_6/challenge_6.egg-info
+[0.579s] writing ../build/challenge_6/challenge_6.egg-info/PKG-INFO
+[0.579s] writing dependency_links to ../build/challenge_6/challenge_6.egg-info/dependency_links.txt
+[0.579s] writing entry points to ../build/challenge_6/challenge_6.egg-info/entry_points.txt
+[0.580s] writing requirements to ../build/challenge_6/challenge_6.egg-info/requires.txt
+[0.580s] writing top-level names to ../build/challenge_6/challenge_6.egg-info/top_level.txt
+[0.580s] writing manifest file '../build/challenge_6/challenge_6.egg-info/SOURCES.txt'
+[0.580s] reading manifest file '../build/challenge_6/challenge_6.egg-info/SOURCES.txt'
+[0.581s] writing manifest file '../build/challenge_6/challenge_6.egg-info/SOURCES.txt'
+[0.581s] running build
+[0.581s] running build_py
+[0.581s] creating /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build
+[0.581s] creating /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib
+[0.581s] creating /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib/challenge_6
+[0.581s] copying challenge_6/camera_node.py -> /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib/challenge_6
+[0.581s] copying challenge_6/line_node.py -> /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib/challenge_6
+[0.582s] copying challenge_6/vision.py -> /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib/challenge_6
+[0.582s] copying challenge_6/odometry_node.py -> /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib/challenge_6
+[0.582s] copying challenge_6/pid_challenge6.py -> /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib/challenge_6
+[0.582s] copying challenge_6/__init__.py -> /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib/challenge_6
+[0.582s] copying challenge_6/hough_node.py -> /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib/challenge_6
+[0.582s] running install
+[0.582s] running install_lib
+[0.583s] creating /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6
+[0.583s] copying /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib/challenge_6/camera_node.py -> /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6
+[0.583s] copying /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib/challenge_6/line_node.py -> /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6
+[0.583s] copying /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib/challenge_6/vision.py -> /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6
+[0.583s] copying /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib/challenge_6/odometry_node.py -> /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6
+[0.583s] copying /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib/challenge_6/pid_challenge6.py -> /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6
+[0.583s] copying /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib/challenge_6/__init__.py -> /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6
+[0.584s] copying /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib/challenge_6/hough_node.py -> /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6
+[0.584s] byte-compiling /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6/camera_node.py to camera_node.cpython-310.pyc
+[0.585s] byte-compiling /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6/line_node.py to line_node.cpython-310.pyc
+[0.585s] byte-compiling /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6/vision.py to vision.cpython-310.pyc
+[0.586s] byte-compiling /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6/odometry_node.py to odometry_node.cpython-310.pyc
+[0.586s] byte-compiling /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6/pid_challenge6.py to pid_challenge6.cpython-310.pyc
+[0.587s] byte-compiling /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6/__init__.py to __init__.cpython-310.pyc
+[0.587s] byte-compiling /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6/hough_node.py to hough_node.cpython-310.pyc
+[0.588s] running install_data
+[0.588s] creating /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/share/ament_index
+[0.588s] creating /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/share/ament_index/resource_index
+[0.588s] creating /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/share/ament_index/resource_index/packages
+[0.588s] copying resource/challenge_6 -> /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/share/ament_index/resource_index/packages
+[0.588s] copying package.xml -> /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/share/challenge_6
+[0.588s] creating /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/share/challenge_6/launch
+[0.588s] running install_egg_info
+[0.590s] Copying ../build/challenge_6/challenge_6.egg-info to /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6-0.0.0-py3.10.egg-info
+[0.590s] running install_scripts
+[0.604s] Installing camera_node script to /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/challenge_6
+[0.604s] Installing hough_node script to /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/challenge_6
+[0.605s] Installing line_node script to /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/challenge_6
+[0.605s] Installing odometry_node script to /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/challenge_6
+[0.605s] Installing pid_challenge6 script to /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/challenge_6
+[0.605s] Installing vision script to /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/challenge_6
+[0.605s] writing list of installed files to '/home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/install.log'
+[0.619s] Invoked command in '/home/sofia/ros2_ws/src/ch_6/birria_team/challenge_6' returned '0': PYTHONPATH=/home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../build/challenge_6 build --build-base /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build install --record /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/install.log --single-version-externally-managed install_data

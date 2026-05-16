@@ -56,7 +56,7 @@ class TrafficLightNode(Node):
         self.declare_parameter('vel_no_light', 0.2)  # sin semáforo = vía libre
         #Control para bandera
         self.flag_counter = 0
-        self.frames_flag = 4
+        self.frames_flag = 3
 
         self.debug = self.get_parameter('debug').value
         self.vel_red = self.get_parameter('vel_red').value
@@ -177,12 +177,9 @@ class TrafficLightNode(Node):
             cv.waitKey(1)
 
     def checked_flag(self, image):
-        # Pasamos la imagen a escala de grises y aplicamos GausianBlur para eliminar ruido digital
         gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
         blur = cv.GaussianBlur(gray, (5, 5), 0)
 
-        # Con esto se crea como una "caja flotante" para que solo analice esa parte donde se detecte la bandera
-        # en lugar de analizar toda la imagen con threshold que era lo primero que teniamos
         height, width = gray.shape
         # Cortamos la zona superior/media donde suelen aparecer las banderas
         roi_y_inicio = int(height * 0.1)

@@ -1,0 +1,56 @@
+running egg_info
+creating ../build/challenge_6/challenge_6.egg-info
+writing ../build/challenge_6/challenge_6.egg-info/PKG-INFO
+writing dependency_links to ../build/challenge_6/challenge_6.egg-info/dependency_links.txt
+writing entry points to ../build/challenge_6/challenge_6.egg-info/entry_points.txt
+writing requirements to ../build/challenge_6/challenge_6.egg-info/requires.txt
+writing top-level names to ../build/challenge_6/challenge_6.egg-info/top_level.txt
+writing manifest file '../build/challenge_6/challenge_6.egg-info/SOURCES.txt'
+reading manifest file '../build/challenge_6/challenge_6.egg-info/SOURCES.txt'
+writing manifest file '../build/challenge_6/challenge_6.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build
+creating /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib
+creating /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib/challenge_6
+copying challenge_6/camera_node.py -> /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib/challenge_6
+copying challenge_6/line_node.py -> /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib/challenge_6
+copying challenge_6/vision.py -> /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib/challenge_6
+copying challenge_6/odometry_node.py -> /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib/challenge_6
+copying challenge_6/pid_challenge6.py -> /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib/challenge_6
+copying challenge_6/__init__.py -> /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib/challenge_6
+copying challenge_6/hough_node.py -> /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib/challenge_6
+running install
+running install_lib
+creating /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6
+copying /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib/challenge_6/camera_node.py -> /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6
+copying /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib/challenge_6/line_node.py -> /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6
+copying /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib/challenge_6/vision.py -> /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6
+copying /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib/challenge_6/odometry_node.py -> /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6
+copying /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib/challenge_6/pid_challenge6.py -> /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6
+copying /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib/challenge_6/__init__.py -> /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6
+copying /home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/build/lib/challenge_6/hough_node.py -> /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6
+byte-compiling /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6/camera_node.py to camera_node.cpython-310.pyc
+byte-compiling /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6/line_node.py to line_node.cpython-310.pyc
+byte-compiling /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6/vision.py to vision.cpython-310.pyc
+byte-compiling /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6/odometry_node.py to odometry_node.cpython-310.pyc
+byte-compiling /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6/pid_challenge6.py to pid_challenge6.cpython-310.pyc
+byte-compiling /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6/__init__.py to __init__.cpython-310.pyc
+byte-compiling /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6/hough_node.py to hough_node.cpython-310.pyc
+running install_data
+creating /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/share/ament_index
+creating /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/share/ament_index/resource_index
+creating /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/share/ament_index/resource_index/packages
+copying resource/challenge_6 -> /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/share/ament_index/resource_index/packages
+copying package.xml -> /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/share/challenge_6
+creating /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/share/challenge_6/launch
+running install_egg_info
+Copying ../build/challenge_6/challenge_6.egg-info to /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/python3.10/site-packages/challenge_6-0.0.0-py3.10.egg-info
+running install_scripts
+Installing camera_node script to /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/challenge_6
+Installing hough_node script to /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/challenge_6
+Installing line_node script to /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/challenge_6
+Installing odometry_node script to /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/challenge_6
+Installing pid_challenge6 script to /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/challenge_6
+Installing vision script to /home/sofia/ros2_ws/src/ch_6/birria_team/install/challenge_6/lib/challenge_6
+writing list of installed files to '/home/sofia/ros2_ws/src/ch_6/birria_team/build/challenge_6/install.log'
