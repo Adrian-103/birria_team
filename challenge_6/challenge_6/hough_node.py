@@ -34,7 +34,7 @@ class hough_node(Node):
         imagen_canny = cv.Canny(imagen_blur, 50, 150) #Canny
 
         height, width = imagen_canny.shape
-        roi = imagen_canny[height//2:height, 0:width]
+        roi = imagen_canny[int(height*0.70):height, int(width*0.20):int(width*0.80)]
 
         #La región de interés se calcula de la siguiente manera: roi = imagen_canny[y_inicio:y_fin, x_inicio:x_fin]
         #Así como lo escribí aquí, cortamos la imagen a la zona de abajo nada más para concentrarnos en la pista
@@ -75,25 +75,35 @@ class hough_node(Node):
             return
         #Este es simplemente el caso de que no detecte nada y no crasheé si algo pasa.
 
+        
         cx = np.mean([(x1 + x2) / 2 for x1, y1, x2, y2 in lines[:, 0]])
+        cx_frame = cx + int(width * 0.25)  # convertir cx del ROI a coordenadas del frame
+
         #Cada segmento de lines queda de una forma: [x1, y1, x2, y2]
         #El punto medio en X de cada segmento es (x1 + x2) / 2
         #Queremos el promedio de todos esos puntos medios
 
         if self.first_sample:
-            self.filtered_cx = cx
+            self.filtered_cx = cx_frame
             self.first_sample = False
         else:
-            self.filtered_cx = self.alpha * cx + (1 - self.alpha) * self.filtered_cx
+            self.filtered_cx = self.alpha * cx_frame + (1 - self.alpha) * self.filtered_cx
 
         if self.debug:
             for x1, y1, x2, y2 in lines[:, 0]:
-                cv.line(frame, (x1, y1 + frame.shape[0]//2), (x2, y2 + frame.shape[0]//2), (0, 255, 0), 2)
-            cv.circle(frame, (int(self.filtered_cx), frame.shape[0]//2 + (frame.shape[0]//2)//2), 5, (0, 0, 255), -1)
-            cv.imshow('Hough debug', frame)
+                cv.line(frame, (x1 + int(width*0.20), y1 + int(height*0.70)), 
+                       (x2 + int(width*0.20), y2 + int(height*0.70)), (0, 255, 0), 2)
+            cv.circle(frame, (int(self.filtered_cx), int(height*0.70) + (int(height*0.30)//2)), 5, (0, 0, 255), -1)
+            cv.rectangle(frame, 
+             (int(width*0.20), int(height*0.70)), 
+             (int(width*0.80), height), 
+             (255, 0, 0), 2)  # azul
+            debug_frame = cv.resize(frame, (640, 360))
+            cv.imshow('Hough debug', debug_frame)
             cv.waitKey(1)
 
-        error = (width/2) - self.filtered_cx
+
+        error = (width / 2) - self.filtered_cx
         #Error positivo -> La línea está a la izquierda
         #Error negativo -> La línea está a la derecha
 
