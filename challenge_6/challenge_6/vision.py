@@ -51,9 +51,9 @@ class TrafficLightNode(Node):
         # Parámetros configurables
         self.declare_parameter('debug', False)
         self.declare_parameter('vel_red', 0.0)
-        self.declare_parameter('vel_yellow', 0.1)
-        self.declare_parameter('vel_green', 0.2)
-        self.declare_parameter('vel_no_light', 0.2)  # sin semáforo = vía libre
+        self.declare_parameter('vel_yellow', 0.05)
+        self.declare_parameter('vel_green', 0.1)
+        self.declare_parameter('vel_no_light', 0.1)  # sin semáforo = vía libre
         #Control para bandera
         self.flag_counter = 0
         self.frames_flag = 4

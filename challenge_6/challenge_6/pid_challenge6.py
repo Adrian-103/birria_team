@@ -88,7 +88,7 @@ class PointPIDController(Node):
         # Velocidades
 
         # Velocidad lineal máxima física del robot.
-        self.declare_parameter('max_linear_vel', 0.2)
+        self.declare_parameter('max_linear_vel', 0.1)
 
         # Velocidad angular máxima física del robot.
         self.declare_parameter('max_angular_vel', 0.2)
@@ -147,7 +147,7 @@ class PointPIDController(Node):
         # Amarillo-> 0.1
         # Rojo    -> 0.0
 
-        self.traffic_max_vel = 0.2
+        self.traffic_max_vel = 0.1
 
         # Variables de odometría
         self.x = 0.0
