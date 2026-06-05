@@ -63,6 +63,7 @@ class obstaculos(Node):
         distancia = (pulse_end - pulse_start) * 17150
 
         msg = String()
+        self.get_logger().info(f'Distancia calculada: {distancia:.2f} cm')
         if distancia <= 15.0:
             msg.data = "caja"
         else:
