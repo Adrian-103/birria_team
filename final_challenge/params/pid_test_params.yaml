@@ -1,0 +1,28 @@
+line_follower_pid:
+  ros__parameters:
+ 
+    # Frecuencia del controlador (Hz)
+    # Debe coincidir con el FPS de la cámara
+    sample_freq: 24.0
+ 
+    # PID angular
+    # El error viene en píxeles (o en [-1, 1] si normalize_error=true en el nodo de visión)
+    kp_yaw: 0.06       # ganancia proporcional
+    ki_yaw: 0.0         # dejar en 0 al inicio; agregar solo si hay error estacionario
+    kd_yaw: 0.004       # amortigua oscilaciones
+ 
+    # Velocidad lineal fija para pruebas (m/s)
+    linear_vel: 0.14
+ 
+    # Saturación de la velocidad angular (rad/s)
+    max_angular_vel: 0.31
+ 
+    # Tiempo sin recibir /line_error antes de considerar línea perdida (s)
+    line_lost_timeout: 0.5
+ 
+    # Filtro exponencial del error visual
+    # 1.0 = sin filtro (más rápido, más ruido)
+    # 0.1 = muy suavizado (más lento, más estable)
+    filter_alpha: 0.4
+ 
+

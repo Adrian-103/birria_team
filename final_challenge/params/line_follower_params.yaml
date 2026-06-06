@@ -1,0 +1,59 @@
+# line_follower_params.yaml
+# Load with:  ros2 run <your_pkg> line_follower_cv --ros-args --params-file line_follower_params.yaml
+# or via the provided launch file. Every value can also be changed live:
+#   ros2 param set /line_follower_cv binary_threshold 90
+line_follower_cv:
+  ros__parameters:
+    # ---- topics ----
+    image_topic: "/camera/image_raw"
+    error_topic: "/line_error"
+    status_topic: "/line_status"
+    debug_image_topic: "/line_follower/debug_image"
+
+    # ---- debug / remote viewing ----
+    debug: true                  # turn off in production to save CPU/bandwidth
+    debug_compressed: true       # JPEG over the network (recommended over WiFi)
+    debug_resize_width: 480      # shrink before sending; 0 = full resolution
+    debug_publish_every_n: 2     # publish every Nth frame (1 = every frame)
+    debug_show_mask: true        # picture-in-picture of the binary mask (great for tuning)
+
+    # ---- behaviour when the line is lost ----
+    hold_error_on_loss: true     # keep last error so the PID keeps steering to re-acquire
+
+    # ---- ROI trapezoid (fractions of the image, scales with resolution) ----
+    roi_top_y: 0.7              # far edge of the look-ahead region (0=top, 1=bottom)
+    roi_bottom_y: 1.0            # near edge
+    roi_top_width: 0.45          # narrow far edge (perspective)
+    roi_bottom_width: 1.0       # wide near edge
+
+    # ---- preprocessing ----
+    gaussian_kernel: 5           # odd; higher = more denoise/blur
+    threshold_method: "adaptive"     # "otsu" (auto) | "adaptive" (uneven light) | "fixed"
+    binary_threshold: 80         # only for "fixed": pixels darker than this become the line
+    adaptive_block_size: 120      # only for "adaptive" (odd)
+    adaptive_c: 19               # only for "adaptive"
+    morph_kernel: 5              # 0/1/2 disables; cleans specks & closes gaps
+    morph_iterations: 1
+
+    # ---- Canny ----
+    canny_low: 50
+    canny_high: 150
+
+    # ---- Hough (cv2.HoughLinesP) ----
+    hough_rho: 1.0
+    hough_theta_deg: 1.0
+    hough_threshold: 25
+    hough_min_line_length: 30    # raise to ignore short noise segments
+    hough_max_line_gap: 50       # raise to bridge a dashed/broken line
+
+    # ---- line filtering & decision ----
+    max_line_angle_deg: 70.0     # reject segments more horizontal than this (deg from vertical)
+    min_valid_segments: 2        # raise (e.g. 2) to require both line edges before trusting it
+    eval_line_frac: 0.9          # where in the ROI to measure x (0.9 = near the robot)
+
+    # ---- robustness fallback ----
+    use_centroid_fallback: true  # if Hough finds nothing, fall back to the mask centroid
+    min_blob_area: 400           # min mask area (px) to trust the centroid fallback
+
+    # ---- output ----
+    normalize_error: false       # true -> /line_error in ~[-1, 1] instead of pixels
