@@ -7,15 +7,15 @@ line_follower_pid:
  
     # PID angular
     # El error viene en píxeles (o en [-1, 1] si normalize_error=true en el nodo de visión)
-    kp_yaw: 0.06       # ganancia proporcional
+    kp_yaw: 0.01       # ganancia proporcional
     ki_yaw: 0.0         # dejar en 0 al inicio; agregar solo si hay error estacionario
-    kd_yaw: 0.004       # amortigua oscilaciones
+    kd_yaw: 0.001       # amortigua oscilaciones
  
     # Velocidad lineal fija para pruebas (m/s)
     linear_vel: 0.14
  
     # Saturación de la velocidad angular (rad/s)
-    max_angular_vel: 0.31
+    max_angular_vel: 0.4
  
     # Tiempo sin recibir /line_error antes de considerar línea perdida (s)
     line_lost_timeout: 0.5
@@ -25,4 +25,4 @@ line_follower_pid:
     # 0.1 = muy suavizado (más lento, más estable)
     filter_alpha: 0.4
  
-
+    error_tolerance: 20.0
