@@ -1,13 +1,11 @@
 import rclpy
 from rclpy.node import Node
-from sensor_msgs.msg import Image
+from sensor_msgs.msg import Image, CompressedImage
 from std_msgs.msg import Bool
 from rcl_interfaces.msg import SetParametersResult
 from cv_bridge import CvBridge
 import cv2
 import numpy as np
-from sensor_msgs.msg import CompressedImage
-from std_msgs.msg import Bool
 
 class ZebraDetector(Node):
     def __init__(self):
@@ -115,8 +113,9 @@ class ZebraDetector(Node):
         texto = f"Area Negra: {porcentaje:.1f}%"
         cv2.putText(debug_img, texto, (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, color_texto, 2)
         
+        # Comprimir y publicar
         mensaje_comprimido = self.bridge.cv2_to_compressed_imgmsg(debug_img, dst_format='jpg')
-	self.pub_debug.publish(mensaje_comprimido)
+        self.pub_debug.publish(mensaje_comprimido)
 
 
 def main(args=None):
