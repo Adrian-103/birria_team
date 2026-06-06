@@ -57,7 +57,7 @@ class TrafficSignNode(Node):
         #  Modelo YOLOv11
         # ---------------------------
         try:
-            self.model = YOLO('/home/sofia/ros2_ws/src/ch_7/ch_7/best (1).pt')
+            self.model = YOLO('/home/jess/ros2_ws/src/birria_team/ch_7/ch_7/best.pt')
             self.nombres = self.model.names  # Diccionario de las señales que tenemos
             self.get_logger().info(
                 f'Modelo cargado, clases: {list(self.nombres.values())}'
