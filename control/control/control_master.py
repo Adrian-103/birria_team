@@ -11,6 +11,8 @@ from std_msgs.msg import Bool
 
 from geometry_msgs.msg import Twist
 
+from rcl_interfaces.msg import SetParametersResult
+
 
 class MasterControl(Node):
 
@@ -18,23 +20,41 @@ class MasterControl(Node):
 
         super().__init__('master_control')
 
+        # Parámetros
+
+        self.declare_parameter('segundos_lineal_straight', 1.5)
+        self.declare_parameter('segundos_angular', 1.2)
+        self.declare_parameter('segundos_lineal_turn', 0.8)
+
+        self.declare_parameter('vel_lineal_intersection', 0.05)
+        self.declare_parameter('vel_angular_turn', 0.35)
+
+        self.segundos_lineal_straight = self.get_parameter('segundos_lineal_straight').value
+
+        self.segundos_angular = self.get_parameter('segundos_angular').value
+
+        self.segundos_lineal_turn = self.get_parameter('segundos_lineal_turn').value
+
+        self.vel_lineal_intersection = self.get_parameter('vel_lineal_intersection').value
+
+        self.vel_angular_turn = self.get_parameter('vel_angular_turn').value
+
+        self.add_on_set_parameters_callback(self.parameter_callback)
+
         # Entradas
+
         self.lin_vel = 0.0
         self.ang_vel = 0.0
 
         self.current_sign = "sin_señal"
 
-        # Intersección
+        # Maniobras
 
-        self.intersection_active = False
-        self.intersection_end_time = 0.0
+        self.executing_maneuver = False
+        self.maneuver_type = None
+        self.maneuver_start_time = 0.0
 
-        # Parámetros
-
-        self.straight_time = 1.0
-        self.turn_time = 1.5
-
-        # Suscriptores
+        # Suscripciones
 
         self.create_subscription(Float32,'/lin_vel',self.lin_vel_callback,10)
 
@@ -52,17 +72,40 @@ class MasterControl(Node):
 
         self.get_logger().info("Master Control iniciado")
 
+    # Parámetros dinámicos
+
+    def parameter_callback(self, params):
+
+        for param in params:
+
+            if param.name == 'segundos_lineal_straight':
+                self.segundos_lineal_straight = param.value
+
+            elif param.name == 'segundos_angular':
+                self.segundos_angular = param.value
+
+            elif param.name == 'segundos_lineal_turn':
+                self.segundos_lineal_turn = param.value
+
+            elif param.name == 'vel_lineal_intersection':
+                self.vel_lineal_intersection = param.value
+
+            elif param.name == 'vel_angular_turn':
+                self.vel_angular_turn = param.value
+
+            self.get_logger().info(f'{param.name} -> {param.value}')
+
+        return SetParametersResult(successful=True)
+
     # Callbacks
 
     def lin_vel_callback(self, msg):
 
-        if not self.intersection_active:
-            self.lin_vel = msg.data
+        self.lin_vel = msg.data
 
     def ang_vel_callback(self, msg):
 
-        if not self.intersection_active:
-            self.ang_vel = msg.data
+        self.ang_vel = msg.data
 
     def sign_callback(self, msg):
 
@@ -73,30 +116,21 @@ class MasterControl(Node):
         if not msg.data:
             return
 
-        if self.intersection_active:
+        if self.executing_maneuver:
             return
 
-        # ----------------------------------
+        if self.current_sign not in [
+            "straight",
+            "turnL",
+            "turnR"
+        ]:
+            return
 
-        self.intersection_active = True
+        self.executing_maneuver = True
+        self.maneuver_start_time = time.time()
+        self.maneuver_type = self.current_sign
 
-        if self.current_sign == "turnL":
-
-            self.intersection_end_time = (time.time() + self.turn_time)
-
-            self.get_logger().info("Interseccion -> Giro izquierda")
-
-        elif self.current_sign == "turnR":
-
-            self.intersection_end_time = (time.time() + self.turn_time)
-
-            self.get_logger().info("Interseccion -> Giro derecha")
-
-        elif self.current_sign == "straight":
-
-            self.intersection_end_time = (time.time() + self.straight_time)
-
-            self.get_logger().info("Interseccion -> Seguir derecho")
+        self.get_logger().info(f"Interseccion -> {self.maneuver_type}")
 
     # Loop
 
@@ -104,37 +138,98 @@ class MasterControl(Node):
 
         cmd = Twist()
 
-        # Intersección
+        # Maniobra en intersección
 
-        if self.intersection_active:
+        if self.executing_maneuver:
 
-            if time.time() >= self.intersection_end_time:
+            elapsed = time.time() - self.maneuver_start_time
 
-                self.intersection_active = False
+            # Straight
 
-                self.get_logger().info("Fin maniobra")
+            if self.maneuver_type == "straight":
 
-                return
+                if elapsed < self.segundos_lineal_straight:
 
-            # ------------------------------
+                    cmd.linear.x = self.vel_lineal_intersection
+                    cmd.angular.z = 0.0
 
-            if self.current_sign == "turnL":
+                else:
 
-                cmd.linear.x = 0.03
-                cmd.angular.z = 0.35
+                    self.executing_maneuver = False
 
-            elif self.current_sign == "turnR":
+                    self.get_logger().info(
+                        "Fin maniobra"
+                    )
 
-                cmd.linear.x = 0.03
-                cmd.angular.z = -0.35
+                    return
 
-            elif self.current_sign == "straight":
+            # Turn Left
 
-                cmd.linear.x = 0.05
-                cmd.angular.z = 0.0
+            elif self.maneuver_type == "turnL":
+
+                t1 = self.segundos_lineal_turn
+
+                t2 = (self.segundos_lineal_turn + self.segundos_angular)
+
+                t3 = (self.segundos_lineal_turn + self.segundos_angular + self.segundos_lineal_turn)
+
+                if elapsed < t1:
+
+                    cmd.linear.x = self.vel_lineal_intersection
+                    cmd.angular.z = 0.0
+
+                elif elapsed < t2:
+
+                    cmd.linear.x = 0.0
+                    cmd.angular.z = self.vel_angular_turn
+
+                elif elapsed < t3:
+
+                    cmd.linear.x = self.vel_lineal_intersection
+                    cmd.angular.z = 0.0
+
+                else:
+
+                    self.executing_maneuver = False
+
+                    self.get_logger().info("Fin maniobra")
+
+                    return
+
+            # Turn Right
+
+            elif self.maneuver_type == "turnR":
+
+                t1 = self.segundos_lineal_turn
+
+                t2 = (self.segundos_lineal_turn + self.segundos_angular)
+
+                t3 = (self.segundos_lineal_turn + self.segundos_angular + self.segundos_lineal_turn)
+
+                if elapsed < t1:
+
+                    cmd.linear.x = self.vel_lineal_intersection
+                    cmd.angular.z = 0.0
+
+                elif elapsed < t2:
+
+                    cmd.linear.x = 0.0
+                    cmd.angular.z = -self.vel_angular_turn
+
+                elif elapsed < t3:
+
+                    cmd.linear.x = self.vel_lineal_intersection
+                    cmd.angular.z = 0.0
+
+                else:
+
+                    self.executing_maneuver = False
+
+                    self.get_logger().info("Fin maniobra")
+
+                    return
 
             self.cmd_pub.publish(cmd)
-
             return
 
         # Normal
@@ -144,6 +239,7 @@ class MasterControl(Node):
 
         self.cmd_pub.publish(cmd)
 
+# Main
 
 def main(args=None):
 
