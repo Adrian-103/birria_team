@@ -272,6 +272,9 @@ class TrafficNode(Node):
         elif green_detected:
             self._pub_color_semaforo("green")
         else:
+            msg_sem = String()
+            msg_sem.data = "sin_sem"
+            self.color_pub.publish(msg_sem)
             self.last_color_s = None
 
     # --------------------------------------
@@ -304,9 +307,9 @@ class TrafficNode(Node):
                     self.get_logger().info(f'SEÑAL - {ganador} - Tópico: "{clave_sign}" ({num_votos} frames)')
                     self.last_sign = ganador
             else:
-                self.last_sign = None
+                self._publicar_sin_senal()
         else:
-            self.last_sign = None
+            self._publicar_sin_senal()
 
         # ------------- 
         #  Debug (opcional, para ahorrar recursos)
@@ -390,6 +393,13 @@ class TrafficNode(Node):
             self.color_pub.publish(msg)
             self.last_color_s = color_key
             self.get_logger().info(f'SEMÁFORO - Estado actual: {color_key.upper()}')
+
+    def _publicar_sin_senal(self):
+        # Envía explícitamente "sin_señal" cuando no hay nada válido en el ROI
+        msg_sign = String()
+        msg_sign.data = "sin_señal"
+        self.sign_pub.publish(msg_sign)
+        self.last_sign = None
 
     def _dibujar(self, frame, detecciones):
         for box, nombre, conf in detecciones:
