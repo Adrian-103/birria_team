@@ -5,7 +5,7 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
-from sensor_msgs.msg import Image
+from sensor_msgs.msg import Image, CompressedImage
 from cv_bridge import CvBridge
 from collections import Counter
 
@@ -93,14 +93,24 @@ class TrafficNode(Node):
         # ---------------------------
         #  Parámetros configurables
         # ---------------------------
-        self.declare_parameter('debug', False)
         self.declare_parameter('confianza', 0.50)
         self.declare_parameter('ancho', 160)
         self.declare_parameter('alto', 140)
         self.declare_parameter('fps', 5)
         self.declare_parameter('frames_c', 6)
 
-        self.debug     = self.get_parameter('debug').value
+        # ---- Debug (igual que line_follower_cv) ----
+        # debug:                 publica la imagen anotada en el tópico (on/off)
+        # debug_window:          ademas muestra una ventana local (solo con pantalla)
+        # debug_compressed:      JPEG por la red (recomendado por el hotspot)
+        # debug_resize_width:    ancho de la imagen publicada (0 = tamaño de inferencia)
+        # debug_publish_every_n: publica 1 de cada N frames (throttle)
+        self.declare_parameter('debug', False)
+        self.declare_parameter('debug_window', False)
+        self.declare_parameter('debug_compressed', True)
+        self.declare_parameter('debug_resize_width', 480)
+        self.declare_parameter('debug_publish_every_n', 1)
+
         self.confianza = self.get_parameter('confianza').value
         self.ancho     = self.get_parameter('ancho').value
         self.alto      = self.get_parameter('alto').value
@@ -128,11 +138,14 @@ class TrafficNode(Node):
         # ---------------------------
         self.bridge       = CvBridge()
         self.last_frame   = None
+        self.last_header  = None
         self.last_sign    = None   
         self.last_color_s = None   
         self.his          = []     # Historial para conteo de frames
+        self._frame_count = 0      # contador para el throttle del debug
 
-        if self.debug:
+        # Ventana local solo si se pide explícitamente (la Jetson suele ir sin pantalla)
+        if self.get_parameter('debug_window').value:
             cv.namedWindow('Deteccion General', cv.WINDOW_NORMAL)
             cv.resizeWindow('Deteccion General', 640, 480)
 
@@ -142,7 +155,14 @@ class TrafficNode(Node):
         self.image_sub = self.create_subscription(Image, '/camera/image_raw', self.camera_callback, 10)
         self.sign_pub  = self.create_publisher(String, '/detected_sign', 10)
         self.color_pub = self.create_publisher(String, '/semaforo', 10)
-        self.img_pub   = self.create_publisher(Image, '/inference_result', 10)
+
+        # El tipo de publicador del debug se fija aquí (comprimido o crudo).
+        # debug_compressed NO es reconfigurable en vivo porque cambia el tipo de tópico.
+        self._debug_compressed = self.get_parameter('debug_compressed').value
+        if self._debug_compressed:
+            self.img_pub = self.create_publisher(CompressedImage, '/inference_result/compressed', 10)
+        else:
+            self.img_pub = self.create_publisher(Image, '/inference_result', 10)
 
         # ---------------------------
         #  Timer 
@@ -167,7 +187,8 @@ class TrafficNode(Node):
     # ---------------------------
     def camera_callback(self, msg):
         try:
-            self.last_frame = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+            self.last_frame  = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+            self.last_header = msg.header
         except Exception as e:
             self.get_logger().error(f'Error capturando cámara: {e}')
 
@@ -277,28 +298,76 @@ class TrafficNode(Node):
             self.last_sign = None
 
         # ------------- 
-        #  Debug
+        #  Debug (opcional, para ahorrar recursos)
         # ------------- 
-        frame_dibujado = self._dibujar(frame_s.copy(), detecciones_validas)
-        
-        cv.rectangle(frame_dibujado, (x_min_p, y_min_p), (x_max_p, y_max_p), (255, 0, 255), 1, cv.LINE_AA)
+        self._publicar_debug(
+            frame_s, detecciones_validas,
+            (x_min_p, y_min_p, x_max_p, y_max_p),
+            red_detected, yellow_detected, green_detected,
+        )
 
-        # Indicador visual del semáforo arriba a la derecha en la pantalla de debug
+    # --------------------------------------
+    #  Construcción y publicación del debug
+    # --------------------------------------
+    def _publicar_debug(self, frame_s, detecciones, roi_px, red, yellow, green):
+        publicar = self.get_parameter('debug').value
+        ventana  = self.get_parameter('debug_window').value
+
+        # Si nadie quiere ver nada, no gastamos CPU ni ancho de banda
+        if not publicar and not ventana:
+            return
+
+        # Throttle: publicar 1 de cada N frames
+        every = max(1, int(self.get_parameter('debug_publish_every_n').value))
+        self._frame_count += 1
+        if self._frame_count % every != 0:
+            return
+
+        # Dibujar cajas y overlays sobre una copia
+        frame_dib = self._dibujar(frame_s.copy(), detecciones)
+
+        x_min_p, y_min_p, x_max_p, y_max_p = roi_px
+        cv.rectangle(frame_dib, (x_min_p, y_min_p), (x_max_p, y_max_p), (255, 0, 255), 1, cv.LINE_AA)
+
+        # Indicador del semáforo (arriba a la derecha)
         st_y, st_x = 2, self.ancho - 22
-        color_indicador = (100, 100, 100) # Gris = No hay semáforo en ROI
-        if red_detected: color_indicador = (0, 0, 255)
-        elif yellow_detected: color_indicador = (0, 242, 255)
-        elif green_detected: color_indicador = (0, 255, 0)
-        
-        cv.circle(frame_dibujado, (st_x + 10, st_y + 10), 6, color_indicador, -1)
-        cv.circle(frame_dibujado, (st_x + 10, st_y + 10), 6, (255, 255, 255), 1)
+        color_ind = (100, 100, 100)   # gris = sin semáforo en ROI
+        if red:
+            color_ind = (0, 0, 255)
+        elif yellow:
+            color_ind = (0, 242, 255)
+        elif green:
+            color_ind = (0, 255, 0)
+        cv.circle(frame_dib, (st_x + 10, st_y + 10), 6, color_ind, -1)
+        cv.circle(frame_dib, (st_x + 10, st_y + 10), 6, (255, 255, 255), 1)
 
-        img_msg = self.bridge.cv2_to_imgmsg(frame_dibujado, encoding='bgr8')
-        self.img_pub.publish(img_msg)
+        # Redimensionar (para visualización / ancho de banda)
+        width = int(self.get_parameter('debug_resize_width').value)
+        if width > 0 and frame_dib.shape[1] != width:
+            scale = width / frame_dib.shape[1]
+            frame_dib = cv.resize(frame_dib, (width, int(frame_dib.shape[0] * scale)),
+                                  interpolation=cv.INTER_LINEAR)
 
-        if self.debug:
-            frame_d = cv.resize(frame_dibujado, (640, 480), interpolation=cv.INTER_LINEAR)
-            cv.imshow('Deteccion General', frame_d)
+        # Publicar por tópico
+        if publicar:
+            if self._debug_compressed:
+                ok, buf = cv.imencode('.jpg', frame_dib, [cv.IMWRITE_JPEG_QUALITY, 70])
+                if ok:
+                    out = CompressedImage()
+                    if self.last_header is not None:
+                        out.header = self.last_header
+                    out.format = 'jpeg'
+                    out.data = buf.tobytes()
+                    self.img_pub.publish(out)
+            else:
+                out = self.bridge.cv2_to_imgmsg(frame_dib, encoding='bgr8')
+                if self.last_header is not None:
+                    out.header = self.last_header
+                self.img_pub.publish(out)
+
+        # Ventana local (solo si hay pantalla)
+        if ventana:
+            cv.imshow('Deteccion General', frame_dib)
             cv.waitKey(1)
 
     def _pub_color_semaforo(self, color_key):
