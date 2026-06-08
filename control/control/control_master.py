@@ -21,14 +21,17 @@ class MasterControl(Node):
         super().__init__('master_control')
 
         # Parámetros
+	self.declare_parameter('segundos_stop_intersection', 2.0)
 
-        self.declare_parameter('segundos_lineal_straight', 1.5)
-        self.declare_parameter('segundos_angular', 1.2)
-        self.declare_parameter('segundos_lineal_turn', 0.8)
+        self.declare_parameter('segundos_lineal_straight', 2.0)
+        self.declare_parameter('segundos_angular', 2.0)
+        self.declare_parameter('segundos_lineal_turn', 2.0)
 
         self.declare_parameter('vel_lineal_intersection', 0.05)
-        self.declare_parameter('vel_angular_turn', 0.35)
-
+        self.declare_parameter('vel_angular_turn', 0.05)
+	
+	self.segundos_stop_intersection = self.get_parameter('segundos_stop_intersection').value
+	
         self.segundos_lineal_straight = self.get_parameter('segundos_lineal_straight').value
 
         self.segundos_angular = self.get_parameter('segundos_angular').value
@@ -92,6 +95,9 @@ class MasterControl(Node):
 
             elif param.name == 'vel_angular_turn':
                 self.vel_angular_turn = param.value
+            
+            elif param.name == 'segundos_stop_intersection':
+    		self.segundos_stop_intersection = param.value
 
             self.get_logger().info(f'{param.name} -> {param.value}')
 
@@ -148,18 +154,23 @@ class MasterControl(Node):
 
             if self.maneuver_type == "straight":
 
-                if elapsed < self.segundos_lineal_straight:
+                t0 = self.segundos_stop_intersection
 
-                    cmd.linear.x = self.vel_lineal_intersection
-                    cmd.angular.z = 0.0
+		if elapsed < t0:
 
-                else:
+    			cmd.linear.x = 0.0
+    			cmd.angular.z = 0.0
+
+		elif elapsed < (t0 + self.segundos_lineal_straight):
+
+    			cmd.linear.x = self.vel_lineal_intersection
+    			cmd.angular.z = 0.0
+
+		else:
 
                     self.executing_maneuver = False
 
-                    self.get_logger().info(
-                        "Fin maniobra"
-                    )
+                    self.get_logger().info("Fin maniobra")
 
                     return
 
@@ -167,29 +178,35 @@ class MasterControl(Node):
 
             elif self.maneuver_type == "turnL":
 
-                t1 = self.segundos_lineal_turn
+                t0 = self.segundos_stop_intersection
 
-                t2 = (self.segundos_lineal_turn + self.segundos_angular)
+		t1 = t0 + self.segundos_lineal_turn
 
-                t3 = (self.segundos_lineal_turn + self.segundos_angular + self.segundos_lineal_turn)
+		t2 = t1 + self.segundos_angular
 
-                if elapsed < t1:
+		t3 = t2 + self.segundos_lineal_turn
 
-                    cmd.linear.x = self.vel_lineal_intersection
-                    cmd.angular.z = 0.0
+                if elapsed < t0:
 
-                elif elapsed < t2:
+    			cmd.linear.x = 0.0
+    			cmd.angular.z = 0.0
 
-                    cmd.linear.x = 0.0
-                    cmd.angular.z = self.vel_angular_turn
+		elif elapsed < t1:
 
-                elif elapsed < t3:
+    			cmd.linear.x = self.vel_lineal_intersection
+    			cmd.angular.z = 0.0
 
-                    cmd.linear.x = self.vel_lineal_intersection
-                    cmd.angular.z = 0.0
+		elif elapsed < t2:
 
-                else:
+    			cmd.linear.x = 0.0
+    			cmd.angular.z = self.vel_angular_turn
 
+		elif elapsed < t3:
+
+    			cmd.linear.x = self.vel_lineal_intersection
+    			cmd.angular.z = 0.0
+
+		else:
                     self.executing_maneuver = False
 
                     self.get_logger().info("Fin maniobra")
@@ -200,28 +217,35 @@ class MasterControl(Node):
 
             elif self.maneuver_type == "turnR":
 
-                t1 = self.segundos_lineal_turn
+                t0 = self.segundos_stop_intersection
 
-                t2 = (self.segundos_lineal_turn + self.segundos_angular)
+		t1 = t0 + self.segundos_lineal_turn
 
-                t3 = (self.segundos_lineal_turn + self.segundos_angular + self.segundos_lineal_turn)
+		t2 = t1 + self.segundos_angular
 
-                if elapsed < t1:
+		t3 = t2 + self.segundos_lineal_turn
 
-                    cmd.linear.x = self.vel_lineal_intersection
-                    cmd.angular.z = 0.0
+                if elapsed < t0:
 
-                elif elapsed < t2:
+    			cmd.linear.x = 0.0
+    			cmd.angular.z = 0.0
 
-                    cmd.linear.x = 0.0
-                    cmd.angular.z = -self.vel_angular_turn
+		elif elapsed < t1:
 
-                elif elapsed < t3:
+    			cmd.linear.x = self.vel_lineal_intersection
+    			cmd.angular.z = 0.0
 
-                    cmd.linear.x = self.vel_lineal_intersection
-                    cmd.angular.z = 0.0
+		elif elapsed < t2:
 
-                else:
+    			cmd.linear.x = 0.0
+    			cmd.angular.z = -self.vel_angular_turn
+
+		elif elapsed < t3:
+
+    			cmd.linear.x = self.vel_lineal_intersection
+    			cmd.angular.z = 0.0
+
+		else:
 
                     self.executing_maneuver = False
 
