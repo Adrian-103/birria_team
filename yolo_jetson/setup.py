@@ -25,7 +25,6 @@ setup(
     entry_points={
         'console_scripts': [
         	'deteccion = yolo_jetson.deteccion:main',
-        	'vision = yolo_jetson.vision:main',
         ],
     },
 )
