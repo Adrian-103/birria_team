@@ -1,0 +1,32 @@
+# line_pid_controller_params.yaml
+# Nodo PID angular para el proyecto final (line_pid_controller)
+# Cargar con: --params-file params/line_pid_controller_params.yaml
+# Ajustar en vivo: ros2 param set /line_pid_controller kp_yaw 0.01
+line_pid_controller:
+  ros__parameters:
+
+    # Frecuencia del controlador (Hz)
+    sample_freq: 24.0
+
+    # PID angular
+    # Salida en rad/s publicada en /ang_vel
+    # El nodo central combina esta salida con la velocidad lineal para generar /cmd_vel
+    kp_yaw: 0.01       # ganancia proporcional
+    ki_yaw: 0.0         # dejar en 0 al inicio; agregar solo si hay error estacionario
+    kd_yaw: 0.001       # amortigua oscilaciones
+
+    # Saturación de la velocidad angular (rad/s)
+    max_angular_vel: 0.4
+
+    # Filtro exponencial del error visual
+    # 1.0 = sin filtro (más rápido, más ruido)
+    # 0.1 = muy suavizado (más lento, más estable)
+    filter_alpha: 0.4
+
+    # Tolerancia del error (deadband) para reducir oscilaciones
+    # En las mismas unidades que /line_error:
+    #   - píxeles si normalize_error=false en el nodo de visión
+    #   - [-1, 1] si normalize_error=true
+    # Empieza en 0.0 y súbelo hasta que las oscilaciones desaparezcan
+    # pero el robot siga siguiendo bien la línea.
+    error_tolerance: 20.0

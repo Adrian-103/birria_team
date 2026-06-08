@@ -14,19 +14,19 @@ class ZebraDetector(Node):
         
         # --- DECLARACIÓN DE PARÁMETROS ---
         # Umbral para binarizar (0-255). Lo que sea menor a esto se vuelve blanco (activo)
-        self.declare_parameter('bin_threshold', 80) 
+        self.declare_parameter('bin_threshold', 70) 
         
         # Dimensiones del Kernel de Dilatación
-        self.declare_parameter('kernel_width', 30)
-        self.declare_parameter('kernel_height', 5)
+        self.declare_parameter('kernel_width', 15)
+        self.declare_parameter('kernel_height', 6)
         
         # Umbral para decidir que sí hay cebra (% de píxeles activos)
-        self.declare_parameter('detection_thresh', 40.0) 
+        self.declare_parameter('detection_thresh', 65.0) 
         
         # Geometría del Trapecio (Valores normalizados de 0.0 a 1.0 respecto al tamaño de la imagen)
-        self.declare_parameter('roi_top_width', 0.4)    # Ancho del trapecio arriba (40% de la imagen)
-        self.declare_parameter('roi_bottom_width', 0.9) # Ancho del trapecio abajo (90% de la imagen)
-        self.declare_parameter('roi_height_offset', 0.6)# Dónde empieza el trapecio (60% hacia abajo)
+        self.declare_parameter('roi_top_width', 1.0)    # Ancho del trapecio arriba (40% de la imagen)
+        self.declare_parameter('roi_bottom_width', 1.0) # Ancho del trapecio abajo (90% de la imagen)
+        self.declare_parameter('roi_height_offset', 0.85)# Dónde empieza el trapecio (60% hacia abajo)
 
         # Cargar valores iniciales
         self.update_params()

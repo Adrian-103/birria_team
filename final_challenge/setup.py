@@ -30,6 +30,7 @@ setup(
             'camera_node = final_challenge.camera_node:main',
             'pid_test_node = final_challenge.pid_test_node:main',
             'intersection = final_challenge.zebra_detector:main',
+            'line_pid_controller = final_challenge.line_pid_controller:main',
         ],
     },
 )
