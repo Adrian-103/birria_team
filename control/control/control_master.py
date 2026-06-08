@@ -158,13 +158,13 @@ class MasterControl(Node):
 
                 if elapsed < t0:
 
-                     cmd.linear.x = 0.0
-                     cmd.angular.z = 0.0
+                    cmd.linear.x = 0.0
+                    cmd.angular.z = 0.0
 
                elif elapsed < (t0 + self.segundos_lineal_straight):
 
-                     cmd.linear.x = self.vel_lineal_intersection
-                     cmd.angular.z = 0.0
+                    cmd.linear.x = self.vel_lineal_intersection
+                    cmd.angular.z = 0.0
 
                else:
 
@@ -188,23 +188,23 @@ class MasterControl(Node):
 
                 if elapsed < t0:
 
-                        cmd.linear.x = 0.0
-                        cmd.angular.z = 0.0
+                    cmd.linear.x = 0.0
+                    cmd.angular.z = 0.0
 
                 elif elapsed < t1:
 
-                        cmd.linear.x = self.vel_lineal_intersection
-                        cmd.angular.z = 0.0
+                    cmd.linear.x = self.vel_lineal_intersection
+                    cmd.angular.z = 0.0
 
                 elif elapsed < t2:
 
-                        cmd.linear.x = 0.0
-                        cmd.angular.z = self.vel_angular_turn
+                    cmd.linear.x = 0.0
+                    cmd.angular.z = self.vel_angular_turn
 
                 elif elapsed < t3:
 
-                        cmd.linear.x = self.vel_lineal_intersection
-                        cmd.angular.z = 0.0
+                    cmd.linear.x = self.vel_lineal_intersection
+                    cmd.angular.z = 0.0
 
                 else:
                     self.executing_maneuver = False
@@ -227,25 +227,25 @@ class MasterControl(Node):
 
                 if elapsed < t0:
 
-                        cmd.linear.x = 0.0
-                        cmd.angular.z = 0.0
+                    cmd.linear.x = 0.0
+                    cmd.angular.z = 0.0
 
-               elif elapsed < t1:
+                elif elapsed < t1:
 
-                        cmd.linear.x = self.vel_lineal_intersection
-                        cmd.angular.z = 0.0
+                    cmd.linear.x = self.vel_lineal_intersection
+                    cmd.angular.z = 0.0
 
-               elif elapsed < t2:
+                elif elapsed < t2:
 
-                        cmd.linear.x = 0.0
-                        cmd.angular.z = -self.vel_angular_turn
+                    cmd.linear.x = 0.0
+                    cmd.angular.z = -self.vel_angular_turn
 
-               elif elapsed < t3:
+                elif elapsed < t3:
 
-                        cmd.linear.x = self.vel_lineal_intersection
-                        cmd.angular.z = 0.0
+                    cmd.linear.x = self.vel_lineal_intersection
+                    cmd.angular.z = 0.0
 
-               else:
+                else:
 
                     self.executing_maneuver = False
 
