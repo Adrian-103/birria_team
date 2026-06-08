@@ -118,12 +118,17 @@ class TrafficNode(Node):
         self.frames_c  = self.get_parameter('frames_c').value
 
         # ---------------------------
-        #  Parámetros ROI
+        #  Parámetros ROI (fracciones de ancho/alto de la imagen de inferencia)
         # ---------------------------
-        self.roi_xmin = 0.40  
-        self.roi_xmax = 0.95  
-        self.roi_ymin = 0.20  
-        self.roi_ymax = 0.85
+        self.declare_parameter('roi_xmin', 0.40)
+        self.declare_parameter('roi_xmax', 0.95)
+        self.declare_parameter('roi_ymin', 0.20)
+        self.declare_parameter('roi_ymax', 0.85)
+
+        self.roi_xmin = self.get_parameter('roi_xmin').value
+        self.roi_xmax = self.get_parameter('roi_xmax').value
+        self.roi_ymin = self.get_parameter('roi_ymin').value
+        self.roi_ymax = self.get_parameter('roi_ymax').value
 
         try:
             RUTA_MODELO = '/home/puzzlebot/birria_ws/src/birria_team/yolo_jetson/yolo_jetson/best_a.pt'
@@ -195,6 +200,12 @@ class TrafficNode(Node):
     def timer_callback(self):
         if self.last_frame is None or self.model is None:
             return
+
+        # Refrescar ROI cada ciclo para permitir ajuste en vivo
+        self.roi_xmin = self.get_parameter('roi_xmin').value
+        self.roi_xmax = self.get_parameter('roi_xmax').value
+        self.roi_ymin = self.get_parameter('roi_ymin').value
+        self.roi_ymax = self.get_parameter('roi_ymax').value
 
         frame_s = cv.resize(self.last_frame, (self.ancho, self.alto), interpolation=cv.INTER_LINEAR)
         
