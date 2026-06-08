@@ -21,12 +21,12 @@ class MasterControl(Node):
         super().__init__('master_control')
 
         # Parámetros
-        self.declare_parameter('segundos_stop_intersection', 2.0)
-        self.declare_parameter('segundos_lineal_straight', 2.0)
-        self.declare_parameter('segundos_angular', 2.0)
-        self.declare_parameter('segundos_lineal_turn', 2.0)
-        self.declare_parameter('vel_lineal_intersection', 0.05)
-        self.declare_parameter('vel_angular_turn', 0.05)
+        self.declare_parameter('segundos_stop_intersection', 1.0)
+        self.declare_parameter('segundos_lineal_straight', 5.0)
+        self.declare_parameter('segundos_angular', 3.0)
+        self.declare_parameter('segundos_lineal_turn', 3.0)
+        self.declare_parameter('vel_lineal_intersection', 0.1)
+        self.declare_parameter('vel_angular_turn', 0.5)
 
         self.segundos_stop_intersection = self.get_parameter('segundos_stop_intersection').value
         self.segundos_lineal_straight = self.get_parameter('segundos_lineal_straight').value
@@ -41,6 +41,7 @@ class MasterControl(Node):
         self.lin_vel = 0.0
         self.ang_vel = 0.0
         self.current_sign = "sin_señal"
+        self.last_valid_sign = None   # última señal accionable recibida
 
         # Maniobras
         self.executing_maneuver = False
@@ -97,6 +98,10 @@ class MasterControl(Node):
 
     def sign_callback(self, msg):
         self.current_sign = msg.data
+        # Guardar la última señal accionable para usarla en la intersección
+        # aunque el tópico ya haya regresado a "sin_señal"
+        if msg.data in ["straight", "turnL", "turnR"]:
+            self.last_valid_sign = msg.data
 
     def inter_callback(self, msg):
 
@@ -106,12 +111,12 @@ class MasterControl(Node):
         if self.executing_maneuver:
             return
 
-        if self.current_sign not in ["straight", "turnL", "turnR"]:
+        if self.last_valid_sign is None:
             return
 
         self.executing_maneuver = True
         self.maneuver_start_time = time.time()
-        self.maneuver_type = self.current_sign
+        self.maneuver_type = self.last_valid_sign
 
         self.get_logger().info(f"Interseccion -> {self.maneuver_type}")
 
@@ -143,6 +148,7 @@ class MasterControl(Node):
 
                 else:
                     self.executing_maneuver = False
+                    self.last_valid_sign = None
                     self.get_logger().info("Fin maniobra")
                     return
 
@@ -173,6 +179,7 @@ class MasterControl(Node):
 
                 else:
                     self.executing_maneuver = False
+                    self.last_valid_sign = None
                     self.get_logger().info("Fin maniobra")
                     return
 
@@ -203,6 +210,7 @@ class MasterControl(Node):
 
                 else:
                     self.executing_maneuver = False
+                    self.last_valid_sign = None
                     self.get_logger().info("Fin maniobra")
                     return
 
