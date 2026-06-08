@@ -105,10 +105,10 @@ class TrafficNode(Node):
         # debug_compressed:      JPEG por la red (recomendado por el hotspot)
         # debug_resize_width:    ancho de la imagen publicada (0 = tamaño de inferencia)
         # debug_publish_every_n: publica 1 de cada N frames (throttle)
-        self.declare_parameter('debug', False)
+        self.declare_parameter('debug', True)
         self.declare_parameter('debug_window', False)
-        self.declare_parameter('debug_compressed', True)
-        self.declare_parameter('debug_resize_width', 480)
+        self.declare_parameter('debug_compressed', False)
+        self.declare_parameter('debug_resize_width', 240)
         self.declare_parameter('debug_publish_every_n', 1)
 
         self.confianza = self.get_parameter('confianza').value
@@ -120,10 +120,10 @@ class TrafficNode(Node):
         # ---------------------------
         #  Parámetros ROI (fracciones de ancho/alto de la imagen de inferencia)
         # ---------------------------
-        self.declare_parameter('roi_xmin', 0.40)
-        self.declare_parameter('roi_xmax', 0.95)
-        self.declare_parameter('roi_ymin', 0.20)
-        self.declare_parameter('roi_ymax', 0.85)
+        self.declare_parameter('roi_xmin', 0.50)
+        self.declare_parameter('roi_xmax', 1.00)
+        self.declare_parameter('roi_ymin', 0.00)
+        self.declare_parameter('roi_ymax', 1.00)
 
         self.roi_xmin = self.get_parameter('roi_xmin').value
         self.roi_xmax = self.get_parameter('roi_xmax').value
