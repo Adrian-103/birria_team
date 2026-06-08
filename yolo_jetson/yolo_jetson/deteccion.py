@@ -116,7 +116,7 @@ class TrafficNode(Node):
         self.roi_ymax = 0.85
 
         try:
-            RUTA_MODELO = '/home/sofia/ros2_ws/src/ch_7/ch_7/best (4).pt'
+            RUTA_MODELO = '/home/puzzlebot/birria_ws/src/birria_team/yolo_jetson/yolo_jetson/best_a.pt'
             self.model = YOLO(RUTA_MODELO)
             self.nombres = self.model.names
         except Exception as e:
