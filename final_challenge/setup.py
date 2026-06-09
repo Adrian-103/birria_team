@@ -10,8 +10,15 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-        ('share/' + package_name + '/params', ['params/line_follower_params.yaml']),
-        ('share/' + package_name + '/launch', ['launch/line_follower.launch.py']),
+        ('share/' + package_name + '/params', [
+            'params/line_follower_params.yaml',
+            'params/line_pid_controller_params.yaml',
+            'params/pid_test_params.yaml',
+        ]),
+        ('share/' + package_name + '/launch', [
+            'launch/line_follower.launch.py'
+            'launch/final_challenge.launch.py',
+        ]),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
