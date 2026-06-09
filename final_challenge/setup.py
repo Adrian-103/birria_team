@@ -29,7 +29,11 @@ setup(
             'line_follower_cv = final_challenge.line_follower_cv:main',
             'camera_node = final_challenge.camera_node:main',
             'pid_test_node = final_challenge.pid_test_node:main',
+            'line_pid_controller = final_challenge.line_pid_controller:main',
             'intersection = final_challenge.zebra_detector:main',
+            'fuzzy_vel = final_challenge.cont_vel:main',
+            'control_master = final_challenge.control_master:main',
+            'odometry_node = final_challenge.odometry_node:main',
         ],
     },
 )
