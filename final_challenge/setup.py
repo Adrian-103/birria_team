@@ -41,6 +41,7 @@ setup(
             'fuzzy_vel = final_challenge.cont_vel:main',
             'control_master = final_challenge.control_master:main',
             'odometry_node = final_challenge.odometry_node:main',
+            'linea_amarilla = final_challenge.caution_detector:main',
         ],
     },
 )

@@ -82,6 +82,13 @@ def generate_launch_description():
         output='screen',
     )
 
+    yellow_line_node = Node(
+        package=PACKAGE,
+        executable='linea_amarilla',
+        name='linea_amarilla',
+        output='screen',
+    )
+
     return LaunchDescription([
         debug_arg,
         image_topic_arg,
@@ -91,4 +98,5 @@ def generate_launch_description():
         cont_vel_node,
         odometry_node,
         zebra_detector_node,
+        yellow_line_node,
     ])
