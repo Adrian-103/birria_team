@@ -210,7 +210,7 @@ class TrafficNode(Node):
         frame_s = cv.resize(self.last_frame, (self.ancho, self.alto), interpolation=cv.INTER_LINEAR)
         
         detecciones_validas = []
-        todas_las_cajas_yolo = [] 
+        cajas_semaforos = [] 
 
         #  YOLO revisa si hay señales
         raw_results = self.model.predict(source=frame_s, imgsz=320, conf=self.confianza, verbose=False)[0]
@@ -219,52 +219,44 @@ class TrafficNode(Node):
                                   raw_results.boxes.cls.cpu().numpy(),
                                   raw_results.boxes.conf.cpu().numpy()):
             nombre_clase = self.nombres[int(cls)]
-            
-            if nombre_clase != "Semaforo":
-                todas_las_cajas_yolo.append(box)
-                if self._en_roi(box):
-                    detecciones_validas.append((box, nombre_clase, float(conf)))
+         
+	if self._en_roi(box):   
+            if nombre_clase == "Semaforo":
+		# Se almacena la caja valida del semaforo en el ROI
+                cajas_semaforos.append(box)
+                detecciones_validas.append((box, nombre_clase, float(conf)))
+            else:
+                detecciones_validas.append((box, nombre_clase, float(conf)))
 
-        # Procesamiento semáforo, HSV solo para ROI
-        hsv_image = cv.cvtColor(frame_s, cv.COLOR_BGR2HSV)
+# -----------------------------------------
+# Procesamiento dinamico Semaforo
+# -----------------------------------------
+        red_detected = False
+	yellow_detected = False
+	green_detected = False
 
-        # Crear una máscara negra del tamaño de la imagen pequeña
-        mascara_roi_permitido = np.zeros(hsv_image.shape[:2], dtype=np.uint8)
+	if len(cajas_semaforos) > 0:
+	    # Mascara de aislamiento semaforo
+            mascara_caja_semaforo = np.zeros(frame_s.shape[:2], dtype=np.uint8)
+	   
+           # Seleccion de caja de semaforo con mayor confianza
+	   bx1, by1, bx2, by2 = map(int, cajas_semaforos[0])
+
+	   cv.rectangle(mascara_caja_semaforo, (bx1, by1), (bx2, by2), 255, -1)
+
+           # Procesamiento semáforo, HSV solo para ROI
+           hsv_image = cv.cvtColor(frame_s, cv.COLOR_BGR2HSV)
+
+	   red_mask = cv.bitwise_and(clean_mask(col_mask(hsv_image, "red")), mascara_caja_semaforo)
+           yellow_mask = cv.bitwise_and(clean_mask(col_mask(hsv_image, "yellow")), mascara_caja_semaforo)
+	   green_mask = cv.bitwise_and(clean_mask(col_masl(hsv_image, "green")), mascara_caja_semaforo)
+
+           # Evalua focos prendidos dentro de los limites de la caja
+           red_detected = blob_exist(red_mask)
+	   yellow_detected = blob_exist(yellow_mask)
+	   green_detected = blob_exist(green_mask)
         
-        # Calcular coordenadas en píxeles - ROI
-        x_min_p = int(self.ancho * self.roi_xmin)
-        x_max_p = int(self.ancho * self.roi_xmax)
-        y_min_p = int(self.alto * self.roi_ymin)
-        y_max_p = int(self.alto * self.roi_ymax)
-        
-        # Dibujar un rectángulo blanco en la máscara: solo esta zona dejará pasar color
-        cv.rectangle(mascara_roi_permitido, (x_min_p, y_min_p), (x_max_p, y_max_p), 255, -1)
-
-        # Máscaras de color HSV 
-        red_mask    = clean_mask(col_mask(hsv_image, "red"))
-        yellow_mask = clean_mask(col_mask(hsv_image, "yellow"))
-        green_mask  = clean_mask(col_mask(hsv_image, "green"))
-
-        # Aplicar el filtro geométrico del ROI
-        red_mask    = cv.bitwise_and(red_mask, mascara_roi_permitido)
-        yellow_mask = cv.bitwise_and(yellow_mask, mascara_roi_permitido)
-        green_mask  = cv.bitwise_and(green_mask, mascara_roi_permitido)
-
-        # Borra las señales detectadas por YOLO para evitar interferencias
-        for box in todas_las_cajas_yolo:
-            bx1, by1, bx2, by2 = map(int, box)
-            bx1, by1 = max(0, bx1 - 2), max(0, by1 - 2)
-            bx2, by2 = min(self.ancho - 1, bx2 + 2), min(self.alto - 1, by2 + 2)
-            
-            cv.rectangle(red_mask, (bx1, by1), (bx2, by2), 0, -1)
-            cv.rectangle(yellow_mask, (bx1, by1), (bx2, by2), 0, -1)
-            cv.rectangle(green_mask, (bx1, by1), (bx2, by2), 0, -1)
-
-        # Revisa si está encendido el semáforo solo en el ROI
-        red_detected    = blob_exist(red_mask)
-        yellow_detected = blob_exist(yellow_mask)
-        green_detected  = blob_exist(green_mask)
-
+        # Publicacion continua del semaforo para fuzzy
         if red_detected:
             self._pub_color_semaforo("red")
         elif yellow_detected:
@@ -280,8 +272,10 @@ class TrafficNode(Node):
     # --------------------------------------
     #  Historial y filtrado de señales
     # --------------------------------------
-        if len(detecciones_validas) > 0:
-            mejor_senal = max(detecciones_validas, key=lambda x: x[2])
+        senales_puras = [d for d in detecciones_validas if d[1] != "Semaforo"]
+
+        if len(senales_puras) > 0:
+            mejor_senal = max(senales_puras, key=lambda x: x[2])
             self.his.append(mejor_senal[1])
         else:
             self.his.append(None)
