@@ -22,7 +22,6 @@ CLAVES_SENALES = {
     "Left_turn": "turnL",
     "Right_turn": "turnR",
     "Road_work_ahead": "rW",
-    "Roundabout": "rA",
     "Stop": "stop",
 }
 
@@ -41,7 +40,7 @@ PALETA = {
     "Left_turn":       (231, 76,  60 ),
     "Right_turn":      (241, 196, 15 ),
     "Road_work_ahead": (155, 89,  182),
-    "Roundabout":      (26,  188, 156),
+    "Semaforo":        (0,   255, 255),
     "Stop":            (230, 126, 34 ),
 }
 COLOR_DEFECTO = (200, 200, 200)
@@ -220,42 +219,42 @@ class TrafficNode(Node):
                                   raw_results.boxes.conf.cpu().numpy()):
             nombre_clase = self.nombres[int(cls)]
          
-	if self._en_roi(box):   
-            if nombre_clase == "Semaforo":
-		# Se almacena la caja valida del semaforo en el ROI
-                cajas_semaforos.append(box)
-                detecciones_validas.append((box, nombre_clase, float(conf)))
-            else:
-                detecciones_validas.append((box, nombre_clase, float(conf)))
+            if self._en_roi(box):   
+                if nombre_clase == "Semaforo":
+            # Se almacena la caja valida del semaforo en el ROI
+                    cajas_semaforos.append(box)
+                    detecciones_validas.append((box, nombre_clase, float(conf)))
+                else:
+                    detecciones_validas.append((box, nombre_clase, float(conf)))
 
 # -----------------------------------------
 # Procesamiento dinamico Semaforo
 # -----------------------------------------
         red_detected = False
-	yellow_detected = False
-	green_detected = False
+        yellow_detected = False
+        green_detected = False
 
-	if len(cajas_semaforos) > 0:
-	    # Mascara de aislamiento semaforo
+        if len(cajas_semaforos) > 0:
+            # Mascara de aislamiento semaforo
             mascara_caja_semaforo = np.zeros(frame_s.shape[:2], dtype=np.uint8)
-	   
-           # Seleccion de caja de semaforo con mayor confianza
-	   bx1, by1, bx2, by2 = map(int, cajas_semaforos[0])
-
-	   cv.rectangle(mascara_caja_semaforo, (bx1, by1), (bx2, by2), 255, -1)
-
-           # Procesamiento semáforo, HSV solo para ROI
-           hsv_image = cv.cvtColor(frame_s, cv.COLOR_BGR2HSV)
-
-	   red_mask = cv.bitwise_and(clean_mask(col_mask(hsv_image, "red")), mascara_caja_semaforo)
-           yellow_mask = cv.bitwise_and(clean_mask(col_mask(hsv_image, "yellow")), mascara_caja_semaforo)
-	   green_mask = cv.bitwise_and(clean_mask(col_masl(hsv_image, "green")), mascara_caja_semaforo)
-
-           # Evalua focos prendidos dentro de los limites de la caja
-           red_detected = blob_exist(red_mask)
-	   yellow_detected = blob_exist(yellow_mask)
-	   green_detected = blob_exist(green_mask)
         
+            # Seleccion de caja de semaforo con mayor confianza
+            bx1, by1, bx2, by2 = map(int, cajas_semaforos[0])
+
+            cv.rectangle(mascara_caja_semaforo, (bx1, by1), (bx2, by2), 255, -1)
+
+            # Procesamiento semáforo, HSV solo para ROI
+            hsv_image = cv.cvtColor(frame_s, cv.COLOR_BGR2HSV)
+
+            red_mask = cv.bitwise_and(clean_mask(col_mask(hsv_image, "red")), mascara_caja_semaforo)
+            yellow_mask = cv.bitwise_and(clean_mask(col_mask(hsv_image, "yellow")), mascara_caja_semaforo)
+            green_mask = cv.bitwise_and(clean_mask(col_masl(hsv_image, "green")), mascara_caja_semaforo)
+
+            # Evalua focos prendidos dentro de los limites de la caja
+            red_detected = blob_exist(red_mask)
+            yellow_detected = blob_exist(yellow_mask)
+            green_detected = blob_exist(green_mask)
+            
         # Publicacion continua del semaforo para fuzzy
         if red_detected:
             self._pub_color_semaforo("red")
