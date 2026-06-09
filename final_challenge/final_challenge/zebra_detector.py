@@ -12,151 +12,111 @@ class ZebraDetector(Node):
         super().__init__('zebra_detector_node')
         self.bridge = CvBridge()
         
-        # --- PARÁMETROS AJUSTABLES EN VIVO ---
-        
-        # 1. Umbral para el NEGRO (0-255)
+        # --- DECLARACIÓN DE PARÁMETROS ---
+        # Umbral para binarizar (0-255). Lo que sea menor a esto se vuelve blanco (activo)
         self.declare_parameter('bin_threshold', 80) 
         
-        # 2. Umbrales HSV para el AMARILLO
-        self.declare_parameter('yellow_h_min', 20)
-        self.declare_parameter('yellow_h_max', 35)
-        self.declare_parameter('yellow_s_min', 100)
-        self.declare_parameter('yellow_s_max', 255)
-        self.declare_parameter('yellow_v_min', 100)
-        self.declare_parameter('yellow_v_max', 255)
-        
-        # 3. Kernel de Dilatación
+        # Dimensiones del Kernel de Dilatación
         self.declare_parameter('kernel_width', 30)
         self.declare_parameter('kernel_height', 5)
         
-        # 4. Umbrales de Detección (% de área dentro del trapecio)
-        self.declare_parameter('zebra_thresh', 40.0)   # Más alto porque la cebra llena más la cámara
-        self.declare_parameter('caution_thresh', 10.0) # Más bajo porque el amarillo es solo la mitad de la cinta
+        # Umbral para decidir que sí hay cebra (% de píxeles activos)
+        self.declare_parameter('detection_thresh', 40.0) 
         
-        # 5. Geometría del Trapecio
-        self.declare_parameter('roi_top_width', 0.4)    
-        self.declare_parameter('roi_bottom_width', 0.9) 
-        self.declare_parameter('roi_height_offset', 0.6)
+        # Geometría del Trapecio (Valores normalizados de 0.0 a 1.0 respecto al tamaño de la imagen)
+        self.declare_parameter('roi_top_width', 0.4)    # Ancho del trapecio arriba (40% de la imagen)
+        self.declare_parameter('roi_bottom_width', 0.9) # Ancho del trapecio abajo (90% de la imagen)
+        self.declare_parameter('roi_height_offset', 0.6)# Dónde empieza el trapecio (60% hacia abajo)
 
         # Cargar valores iniciales
         self.update_params()
         
-        # Activar el callback para cambios en vivo desde rqt
+        # Callback para actualizar parámetros en vivo desde RQT
         self.add_on_set_parameters_callback(self.parameter_callback)
 
         # Suscriptores y Publicadores
+        # OJO: Cambia '/camera/image_raw' por el tópico real de tu cámara
         self.sub_img = self.create_subscription(Image, '/camera/image_raw', self.image_callback, 10)
         
-        # Tópicos separados
-        self.pub_zebra = self.create_publisher(Bool, '/interseccion_detectada', 10)
-        self.pub_caution = self.create_publisher(Bool, '/linea_precaucion_detectada', 10)
+        self.pub_detect = self.create_publisher(Bool, '/interseccion_detectada', 10)
         self.pub_debug = self.create_publisher(CompressedImage, '/vision/zebra_debug/compressed', 10)
         
-        self.get_logger().info("¡Detector Dual (Cebra / Precaución) Iniciado!")
+        self.get_logger().info("¡Detector de Cebra Trapezoidal Iniciado!")
 
     def update_params(self):
         self.thresh_val = self.get_parameter('bin_threshold').value
-        self.y_h_min = self.get_parameter('yellow_h_min').value
-        self.y_h_max = self.get_parameter('yellow_h_max').value
-        self.y_s_min = self.get_parameter('yellow_s_min').value
-        self.y_s_max = self.get_parameter('yellow_s_max').value
-        self.y_v_min = self.get_parameter('yellow_v_min').value
-        self.y_v_max = self.get_parameter('yellow_v_max').value
-        
         self.k_w = self.get_parameter('kernel_width').value
         self.k_h = self.get_parameter('kernel_height').value
-        self.z_th = self.get_parameter('zebra_thresh').value
-        self.c_th = self.get_parameter('caution_thresh').value
+        self.det_th = self.get_parameter('detection_thresh').value
         self.rtw = self.get_parameter('roi_top_width').value
         self.rbw = self.get_parameter('roi_bottom_width').value
         self.rho = self.get_parameter('roi_height_offset').value
 
     def parameter_callback(self, params):
         for param in params:
-            self.get_logger().info(f'Modificado: {param.name} = {param.value}')
+            self.get_logger().info(f'Parámetro actualizado: {param.name} = {param.value}')
         self.update_params()
         return SetParametersResult(successful=True)
 
     def image_callback(self, msg):
+        # 1. Convertir de ROS a OpenCV
         try:
             frame = self.bridge.imgmsg_to_cv2(msg, 'bgr8')
         except Exception as e:
+            self.get_logger().error(f"Error convirtiendo imagen: {e}")
             return
 
         alto, ancho = frame.shape[:2]
 
-        # 1. Definir los puntos del trapecio
+        # 2. Definir los 4 puntos del trapecio según los parámetros
+        # Arriba-Izq, Arriba-Der, Abajo-Der, Abajo-Izq
         tl = [int(ancho * (0.5 - self.rtw/2)), int(alto * self.rho)]
         tr = [int(ancho * (0.5 + self.rtw/2)), int(alto * self.rho)]
         br = [int(ancho * (0.5 + self.rbw/2)), alto]
         bl = [int(ancho * (0.5 - self.rbw/2)), alto]
+        
         pts = np.array([tl, tr, br, bl], np.int32).reshape((-1, 1, 2))
 
-        # 2. Búsqueda del NEGRO
+        # 3. Binarización INVERTIDA (Piso blanco -> 0, Líneas Negras -> 255)
         gris = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        _, mask_black = cv2.threshold(gris, self.thresh_val, 255, cv2.THRESH_BINARY_INV)
+        _, binarizada = cv2.threshold(gris, self.thresh_val, 255, cv2.THRESH_BINARY_INV)
 
-        # 3. Búsqueda del AMARILLO
-        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-        lower_yellow = np.array([self.y_h_min, self.y_s_min, self.y_v_min])
-        upper_yellow = np.array([self.y_h_max, self.y_s_max, self.y_v_max])
-        mask_yellow = cv2.inRange(hsv, lower_yellow, upper_yellow)
-
-        # 4. Dilatación (para unir las franjas)
+        # 4. Dilatación en toda la imagen (Unimos la cebra)
         kernel = np.ones((self.k_h, self.k_w), np.uint8)
-        dilatada_black = cv2.dilate(mask_black, kernel, iterations=2)
-        dilatada_yellow = cv2.dilate(mask_yellow, kernel, iterations=2)
+        dilatada = cv2.dilate(binarizada, kernel, iterations=2)
 
-        # 5. Aplicar máscara trapezoidal
-        mask_roi = np.zeros_like(gris)
-        cv2.fillPoly(mask_roi, [pts], 255)
-        
-        roi_black = cv2.bitwise_and(dilatada_black, mask_roi)
-        roi_yellow = cv2.bitwise_and(dilatada_yellow, mask_roi)
+        # 5. Crear máscara trapezoidal y extraer solo lo que nos importa
+        mask = np.zeros_like(dilatada)
+        cv2.fillPoly(mask, [pts], 255)
+        roi_final = cv2.bitwise_and(dilatada, mask)
 
-        # 6. Calcular porcentajes independientes
-        area_trapecio = cv2.countNonZero(mask_roi)
-        pct_black = 0.0
-        pct_yellow = 0.0
-        
+        # 6. Calcular el porcentaje de píxeles activos DENTRO del trapecio
+        area_trapecio = cv2.countNonZero(mask) # Cuántos píxeles mide nuestro trapecio
         if area_trapecio > 0:
-            pct_black = (cv2.countNonZero(roi_black) / area_trapecio) * 100.0
-            pct_yellow = (cv2.countNonZero(roi_yellow) / area_trapecio) * 100.0
+            blancos = cv2.countNonZero(roi_final)
+            porcentaje = (blancos / area_trapecio) * 100.0
+        else:
+            porcentaje = 0.0
 
-        # 7. LÓGICA DE DECISIÓN ESTRICTA
-        # Si hay suficiente amarillo, es la línea de precaución.
-        is_caution = pct_yellow > self.c_th
-        
-        # Solo puede ser cebra si hay mucho negro Y NO hay amarillo.
-        is_zebra = (pct_black > self.z_th) and not is_caution
+        # 7. Publicar decisión booleana
+        msg_bool = Bool()
+        msg_bool.data = bool(porcentaje > self.det_th)
+        self.pub_detect.publish(msg_bool)
 
-        # 8. Publicar a los tópicos
-        self.pub_zebra.publish(Bool(data=bool(is_zebra)))
-        self.pub_caution.publish(Bool(data=bool(is_caution)))
-
-        # 9. Imagen de Debug Mejorada
-        # Creamos una imagen oscura y pintamos de blanco lo que detectó negro, y amarillo lo que detectó amarillo
-        debug_img = np.zeros_like(frame)
-        debug_img[roi_black > 0] = [255, 255, 255] # Blanco para el negro detectado
-        debug_img[roi_yellow > 0] = [0, 255, 255]  # Amarillo para el amarillo detectado
-        
-        # Dibujar trapecio
+        # 8. Generar imagen de Debug (Para visualizar en rqt_image_view)
+        debug_img = cv2.cvtColor(roi_final, cv2.COLOR_GRAY2BGR)
+        # Dibujamos el contorno del trapecio en verde
         cv2.polylines(debug_img, [pts], True, (0, 255, 0), 2)
         
-        # Textos informativos
-        color_z = (0, 255, 0) if is_zebra else (100, 100, 100)
-        color_c = (0, 255, 255) if is_caution else (100, 100, 100)
+        # Ponemos texto informativo
+        color_texto = (0, 0, 255) if msg_bool.data else (255, 255, 255)
+        texto = f"Area Negra: {porcentaje:.1f}%"
+        cv2.putText(debug_img, texto, (20, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, color_texto, 2)
         
-        cv2.putText(debug_img, f"Negro: {pct_black:.1f}%", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color_z, 2)
-        cv2.putText(debug_img, f"Amarillo: {pct_yellow:.1f}%", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.8, color_c, 2)
-        
-        estado = "NINGUNA"
-        if is_caution: estado = "PRECAUCION"
-        elif is_zebra: estado = "CEBRA"
-        cv2.putText(debug_img, f"-> {estado}", (10, 100), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 255), 2)
-        
+        # Comprimir y publicar
         mensaje_comprimido = self.bridge.cv2_to_compressed_imgmsg(debug_img, dst_format='jpg')
         self.pub_debug.publish(mensaje_comprimido)
+
 
 def main(args=None):
     rclpy.init(args=args)
@@ -167,8 +127,7 @@ def main(args=None):
         pass
     finally:
         node.destroy_node()
-        if rclpy.ok():
-            rclpy.shutdown()
+        rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
