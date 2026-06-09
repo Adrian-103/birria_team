@@ -16,7 +16,7 @@ setup(
             'params/pid_test_params.yaml',
         ]),
         ('share/' + package_name + '/launch', [
-            'launch/line_follower.launch.py'
+            'launch/line_follower.launch.py',
             'launch/final_challenge.launch.py',
         ]),
     ],
