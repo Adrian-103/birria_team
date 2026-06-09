@@ -16,7 +16,7 @@ line_pid_controller:
     kd_yaw: 0.001       # amortigua oscilaciones
 
     # Saturación de la velocidad angular (rad/s)
-    max_angular_vel: 0.4
+    max_angular_vel: 0.45
 
     # Filtro exponencial del error visual
     # 1.0 = sin filtro (más rápido, más ruido)
